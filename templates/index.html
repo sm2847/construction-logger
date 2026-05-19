@@ -357,7 +357,7 @@
             {% endif %}
         </h2>
         
-        <form method="POST" action="{% if edit_log %}/edit/{{ edit_id }}{% else /log %}/log{% endif %}">
+        <form method="POST" action="{% if edit_log %}/edit/{{ edit_id }}{% else %}/log{% endif %}">
             <div class="form-grid">
                 <div>
                     <label for="activity_code">Activity Code</label>
