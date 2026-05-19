@@ -3,24 +3,11 @@ from activities import activities
 
 app = Flask(__name__)
 
-# Store submitted logs temporarily 
-# (Note: Since this is an in-memory list, it resets when the app restarts. 
-# In the future, we'll hook this list variable straight into InfluxDB!)
+# Store submitted logs temporarily in memory
 activity_logs = []
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"])
 def index():
-    if request.method == "POST":
-        log = {
-            "activity_code": request.form.get("activity_code"),
-            "actual_workers": request.form.get("actual_workers"),
-            "actual_duration": request.form.get("actual_duration"),
-            "operational_status": request.form.get("operational_status"),
-            "notes": request.form.get("notes")
-        }
-        activity_logs.append(log)
-        return redirect(url_for('index'))
-
     return render_template(
         "index.html",
         activities=activities,
@@ -28,6 +15,18 @@ def index():
         edit_log=None,  # Not editing by default
         edit_id=None
     )
+
+@app.route("/log", methods=["POST"])
+def log_activity():
+    log = {
+        "activity_code": request.form.get("activity_code"),
+        "actual_workers": request.form.get("actual_workers"),
+        "actual_duration": request.form.get("actual_duration"),
+        "operational_status": request.form.get("status"),  # Aligned with form name attribute
+        "notes": request.form.get("notes")
+    }
+    activity_logs.append(log)
+    return redirect(url_for('index'))
 
 @app.route("/delete/<int:log_id>")
 def delete_log(log_id):
@@ -46,7 +45,7 @@ def edit_log(log_id):
             "activity_code": request.form.get("activity_code"),
             "actual_workers": request.form.get("actual_workers"),
             "actual_duration": request.form.get("actual_duration"),
-            "operational_status": request.form.get("operational_status"),
+            "operational_status": request.form.get("status"),  # Aligned with form name attribute
             "notes": request.form.get("notes")
         }
         return redirect(url_for('index'))
