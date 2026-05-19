@@ -103,6 +103,15 @@
             background-color: #F8FAFC;
         }
 
+        .badge-dependency {
+            background: #EDF2F7;
+            color: #4A5568;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
         /* Form Layout Optimization */
         form { 
             background: white; 
@@ -198,172 +207,94 @@
             display: inline-block; 
             margin-left: 10px; 
             border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        /* Status Pills */
-        .status-pill {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .status-yes { background: #DCFCE7; color: var(--success-green); }
-        .status-no { background: #FEE2E2; color: var(--danger-red); }
-
-        .code-badge {
-            background: #E2E8F0;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-weight: bold;
-            color: var(--dark-cambridge);
         }
     </style>
 </head>
 <body>
 
-<div class="header-banner">
-    <h1>Construction Activity Logger</h1>
-    <p>Department of Engineering — GD1 Offsite Construction Project</p>
-</div>
-
-<div class="container">
-
-    <h2>Planned Activities</h2>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Code</th>
-                    <th>ID</th>
-                    <th>Activity Description</th>
-                    <th>Planned Labor</th>
-                    <th>Allocated Duration</th>
-                    <th>Dependencies</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for activity in activities %}
-                <tr>
-                    <td><span class="code-badge">{{ activity.code }}</span></td>
-                    <td><code>{{ activity.id }}</code></td>
-                    <td style="font-weight: 500;">{{ activity.activity }}</td>
-                    <td>{{ activity.planned_workers }} workers</td>
-                    <td>{{ activity.planned_duration }} hrs</td>
-                    <td><span style="color: #64748B;">{{ activity.dependencies }}</span></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="header-banner">
+        <h1>Department of Engineering</h1>
+        <p>Construction Activity &amp; Live Resource Logger</p>
     </div>
 
-    <h2>{% if edit_log %} Edit Site Log Entry #{{ edit_id + 1 }} {% else %} Record Live Field Progress {% endif %}</h2>
-
-    <form method="POST" action="{% if edit_log %}/edit/{{ edit_id }}{% else %}/{% endif %}">
-        <div class="form-grid">
-            <div class="form-group-full">
-                <label>Active Work Component</label>
-                <select name="activity_code" required>
-                    {% for activity in activities %}
-                    <option value="{{ activity.code }}" {% if edit_log and edit_log.activity_code == activity.code %} selected {% endif %}>
-                        [{{ activity.code }}] {{ activity.activity }} ({{ activity.id }})
-                    </option>
+    <div class="container">
+        
+        <h2>Planned Activities Baseline</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Activity Description</th>
+                        <th>Planned Workers</th>
+                        <th>Planned Duration (hrs)</th>
+                        <th>Dependencies</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for code, details in activities.items() %}
+                    <tr>
+                        <td><strong>{{ code }}</strong></td>
+                        <td>{{ details.name }}</td>
+                        <td>{{ details.resources }}</td>
+                        <td>{{ details.duration }}</td>
+                        <td>
+                            {% if details.dependencies %}
+                                <span class="badge badge-dependency">{{ details.dependencies|join(', ') }}</span>
+                            {% else %}
+                                <span class="badge badge-dependency">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
                     {% endfor %}
-                </select>
-            </div>
-
-            <div>
-                <label>Actual Deployment Start Time</label>
-                <input type="datetime-local" name="start_time" value="{% if edit_log %}{{ edit_log.start_time }}{% endif %}" required>
-            </div>
-
-            <div>
-                <label>Actual Deployment Completion Time</label>
-                <input type="datetime-local" name="end_time" value="{% if edit_log %}{{ edit_log.end_time }}{% endif %}" required>
-            </div>
-
-            <div>
-                <label>Verified Resource Count (Headcount Present)</label>
-                <input type="number" name="actual_workers" value="{% if edit_log %}{{ edit_log.actual_workers }}{% endif %}" required>
-            </div>
-
-            <div>
-                <label>Heavy Equipment & Machinery Utilized</label>
-                <input type="text" name="equipment" placeholder="e.g., Excavator, Tower Crane, None" value="{% if edit_log %}{{ edit_log.equipment }}{% endif %}">
-            </div>
-
-            <div class="form-group-full">
-                <label>Milestone Target Completed?</label>
-                <select name="completed">
-                    <option value="Yes" {% if edit_log and edit_log.completed == 'Yes' %} selected {% endif %}>Yes - Task verified complete</option>
-                    <option value="No" {% if edit_log and edit_log.completed == 'No' %} selected {% endif %}>No - Ongoing / Interrupted</option>
-                </select>
-            </div>
-
-            <div class="form-group-full">
-                <label>Site Inspector Field Notes / Structural Delays / Prohibitions</label>
-                <textarea name="notes" rows="4" placeholder="Describe any material constraints, weather delays, or structural adjustments... ">{% if edit_log %}{{ edit_log.notes }}{% endif %}</textarea>
-            </div>
+                </tbody>
+            </table>
         </div>
 
-        <div style="margin-top: 20px;">
-            <button type="submit" class="btn-submit">{% if edit_log %}Save Edits & Update Data Buffer{% else %}Commit Field Log Entry{% endif %}</button>
-            {% if edit_log %}
-                <a href="/" class="btn-cancel">Cancel Modification</a>
-            {% endif %}
-        </div>
-    </form>
+        <h2>Record Live Field Progress</h2>
+        <form method="POST" action="/log">
+            <div class="form-grid">
+                <div>
+                    <label for="activity_code">Activity Code</label>
+                    <select id="activity_code" name="activity_code" required>
+                        <option value="" disabled selected>Select Activity...</option>
+                        {% for code, details in activities.items() %}
+                        <option value="{{ code }}">{{ code }} - {{ details.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="actual_workers">Actual Workers Present</label>
+                    <input type="number" id="actual_workers" name="actual_workers" min="0" required placeholder="e.g. 4">
+                </div>
 
-    <h2>Database Ledger Entries (Submitted Field Logs)</h2>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Activity</th>
-                    <th>Start Window</th>
-                    <th>End Window</th>
-                    <th>Headcount</th>
-                    <th>Equipment Allocation</th>
-                    <th>Status</th>
-                    <th>Field Inspector Notes</th>
-                    <th style="text-align: center;">Data Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for log in logs %}
-                <tr>
-                    <td><span class="code-badge">{{ log.activity_code }}</span></td>
-                    <td style="font-size: 13px; color: #475569;">{{ log.start_time }}</td>
-                    <td style="font-size: 13px; color: #475569;">{{ log.end_time }}</td>
-                    <td style="font-weight: 600;">{{ log.actual_workers }} active</td>
-                    <td>{{ log.equipment if log.equipment else '<span style="color:#94A3B8;">None</span>' | safe }}</td>
-                    <td>
-                        {% if log.completed == 'Yes' %}
-                            <span class="status-pill status-yes">Completed</span>
-                        {% else %}
-                            <span class="status-pill status-no">Incomplete</span>
-                        {% endif %}
-                    </td>
-                    <td style="font-style: italic; color: #334155; max-width: 250px;">{{ log.notes if log.notes else '<span style="color:#94A3B8;">No notes recorded</span>' | safe }}</td>
-                    <td style="text-align: center; white-space: nowrap;">
-                        <a href="/edit/{{ loop.index0 }}" class="btn-edit">Modify</a>
-                        <a href="/delete/{{ loop.index0 }}" class="btn-delete" onclick="return confirm('Are you sure you want to purge this record from the temporary buffer?');">Delete</a>
-                    </td>
-                </tr>
-                {% endfor %}
-                {% if not logs %}
-                <tr>
-                    <td colspan="8" style="text-align: center; color: #94A3B8; padding: 30px;">Data ledger is currently empty. Submit progress vectors above.</td>
-                </tr>
-                {% endif %}
-            </tbody>
-        </table>
+                <div>
+                    <label for="actual_duration">Actual Duration Spent (Hours)</label>
+                    <input type="number" id="actual_duration" name="actual_duration" step="0.1" min="0" required placeholder="e.g. 2.5">
+                </div>
+
+                <div>
+                    <label for="status">Operational Status</label>
+                    <select id="status" name="status" required>
+                        <option value="Not Started">Not Started</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+
+                <div class="form-group-full">
+                    <label for="notes">Field Observations / Delays Notes</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Log constraints, weather anomalies, or structural issues encountered..."></textarea>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px;">
+                <button type="submit" class="btn-submit">Commit Field Log Entry</button>
+            </div>
+        </form>
+
     </div>
-
-</div>
 
 </body>
 </html>
