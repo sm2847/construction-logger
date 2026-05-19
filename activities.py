@@ -1,162 +1,142 @@
-activities = [
-    {
-        "code": "A",
-        "id": "ST00010",
-        "activity": "Site setup",
-        "planned_workers": 4,
-        "planned_duration": 4.0,
-        "dependencies": "-"
+# activities.py
+
+activities = {
+    "A": {
+        "name": "Offsite setup",
+        "duration": 1.5,
+        "resources": 8,
+        "dependencies": []
     },
-    {
-        "code": "B",
-        "id": "ST00020",
-        "activity": "Surveying of bridge abutments",
-        "planned_workers": 2,
-        "planned_duration": 4.0,
-        "dependencies": "A"
+    "B": {
+        "name": "Steel to offsite",
+        "duration": 1.5,
+        "resources": 2,
+        "dependencies": []
     },
-    {
-        "code": "C",
-        "id": "ST00030",
-        "activity": "Fixing points into concrete substructure",
-        "planned_workers": 2,
-        "planned_duration": 4.0,
-        "dependencies": "B"
+    "C": {
+        "name": "Attach strain gauges",
+        "duration": 1.0,
+        "resources": 3,
+        "dependencies": ["A", "B"]
     },
-    {
-        "code": "D",
-        "id": "ST00040",
-        "activity": "Shell abutments delivered and inspect",
-        "planned_workers": 2,
-        "planned_duration": 2.0,
-        "dependencies": "C"
+    "D": {
+        "name": "Connect bracing to beams",
+        "duration": 1.0,
+        "resources": 8,
+        "dependencies": ["C"]
     },
-    {
-        "code": "E",
-        "id": "ST00050",
-        "activity": "Position shell abutments and inspect",
-        "planned_workers": 4,
-        "planned_duration": 4.0,
-        "dependencies": "C, D"
+    "E": {
+        "name": "Construct temp handrail",
+        "duration": 2.0,
+        "resources": 3,
+        "dependencies": ["A", "B"]
     },
-    {
-        "code": "F",
-        "id": "ST00060",
-        "activity": "Fixing shell abutment details",
-        "planned_workers": 2,
-        "planned_duration": 4.0,
-        "dependencies": "E"
+    "F": {
+        "name": "Construct temp decking",
+        "duration": 2.0,
+        "resources": 3,
+        "dependencies": ["A", "B"]
     },
-    {
-        "code": "G",
-        "id": "ST00070",
-        "activity": "Capping slabs delivered and inspect",
-        "planned_workers": 2,
-        "planned_duration": 2.0,
-        "dependencies": "F"
+    "G": {
+        "name": "Attach decking",
+        "duration": 1.0,
+        "resources": 3,
+        "dependencies": ["D", "F"]
     },
-    {
-        "code": "H",
-        "id": "ST00080",
-        "activity": "Install capping slabs and inspect",
-        "planned_workers": 4,
-        "planned_duration": 4.0,
-        "dependencies": "F, G"
+    "H": {
+        "name": "Attach permanent handrail (inc. Kickboard)",
+        "duration": 4.0,
+        "resources": 6,
+        "dependencies": ["G"]
     },
-    {
-        "code": "I",
-        "id": "ST00090",
-        "activity": "Steel delivery 1 and inspect",
-        "planned_workers": 2,
-        "planned_duration": 4.0,
-        "dependencies": "A"
+    "I": {
+        "name": "Attach temp handrail",
+        "duration": 1.0,
+        "resources": 5,
+        "dependencies": ["E", "G"]
     },
-    {
-        "code": "J",
-        "id": "ST00100",
-        "activity": "Installing steel beams 1 and inspect",
-        "planned_workers": 4,
-        "planned_duration": 12.0,
-        "dependencies": "H, I"
+    "J": {
+        "name": "Stairs",
+        "duration": 3.0,
+        "resources": 3,
+        "dependencies": ["A"]
     },
-    {
-        "code": "K",
-        "id": "ST00110",
-        "activity": "Installing steel beams 2 and inspect",
-        "planned_workers": 4,
-        "planned_duration": 12.0,
-        "dependencies": "H, J"
+    "A1": {
+        "name": "Wednesday",
+        "duration": 6.5,
+        "resources": 0,  # Not specified in sheet, defaulting to 0
+        "dependencies": []
     },
-    {
-        "code": "L",
-        "id": "ST00120",
-        "activity": "Pouring concrete deck section 1",
-        "planned_workers": 6,
-        "planned_duration": 8.0,
-        "dependencies": "K"
+    "K": {
+        "name": "Site setup",
+        "duration": 1.5,
+        "resources": 2,
+        "dependencies": []
     },
-    {
-        "code": "M",
-        "id": "ST00130",
-        "activity": "Curing concrete deck section 1",
-        "planned_workers": 1,
-        "planned_duration": 168.0,
-        "dependencies": "L"
+    "L": {
+        "name": "Surveying of bridge abutments",
+        "duration": 2.0,
+        "resources": 2,
+        "dependencies": ["K"]
     },
-    {
-        "code": "N",
-        "id": "ST00140",
-        "activity": "Pouring concrete deck section 2",
-        "planned_workers": 6,
-        "planned_duration": 8.0,
-        "dependencies": "M"
+    "M": {
+        "name": "Fixing points into concrete substructure",
+        "duration": 1.0,
+        "resources": 4,
+        "dependencies": ["L", "A1"]
     },
-    {
-        "code": "O",
-        "id": "ST00150",
-        "activity": "Curing concrete deck section 2",
-        "planned_workers": 1,
-        "planned_duration": 168.0,
-        "dependencies": "N"
+    "N": {
+        "name": "Shell abutments and capping slabs delivered and inspect",
+        "duration": 0.5,
+        "resources": 2,
+        "dependencies": ["M"]
     },
-    {
-        "code": "P",
-        "id": "ST00160",
-        "activity": "Waterproofing bridge deck surface",
-        "planned_workers": 3,
-        "planned_duration": 8.0,
-        "dependencies": "O"
+    "O": {
+        "name": "Position shell abutments and inspect",
+        "duration": 0.5,
+        "resources": 2,
+        "dependencies": ["N"]
     },
-    {
-        "code": "Q",
-        "id": "ST00170",
-        "activity": "Asphalt paving on bridge deck",
-        "planned_workers": 5,
-        "planned_duration": 8.0,
-        "dependencies": "P"
+    "Q": {
+        "name": "Install capping slabs and inspect",
+        "duration": 1.0,
+        "resources": 2,
+        "dependencies": ["O"]
     },
-    {
-        "code": "R",
-        "id": "ST00180",
-        "activity": "Install safety barriers and guardrails",
-        "planned_workers": 3,
-        "planned_duration": 8.0,
-        "dependencies": "Q"
+    "R": {
+        "name": "Install stairs and inspect",
+        "duration": 0.5,
+        "resources": 2,
+        "dependencies": ["Q"]
     },
-    {
-        "code": "S",
-        "id": "ST00190",
-        "activity": "Construct/install stairs and inspect",
-        "planned_workers": 3,
-        "planned_duration": 12.0,
-        "dependencies": "-"
+    "U": {
+        "name": "Truck leaves, Steel delivery 1",
+        "duration": 1.0,
+        "resources": 2,
+        "dependencies": ["H", "I", "Q"]
     },
-    {
-        "code": "T",
-        "id": "ST00200",
-        "activity": "Final site cleanup and inspection",
-        "planned_workers": 4,
-        "planned_duration": 4.0,
-        "dependencies": "R, S"
+    "V": {
+        "name": "Craning steel beams into place, decouple and inspect",
+        "duration": 2.5,
+        "resources": 2,
+        "dependencies": ["U"]
+    },
+    "X": {
+        "name": "Truck leaves, steel delivery 2 and inspect",
+        "duration": 1.0,
+        "resources": 2,
+        "dependencies": ["V"]
+    },
+    "Y": {
+        "name": "Installing steel beams 2 and inspect",
+        "duration": 4.0,
+        "resources": 2,
+        "dependencies": ["X"]
+    },
+    "Z": {
+        "name": "Photo",
+        "duration": 1.0,
+        "resources": 23,
+        "dependencies": ["Y"]
     }
-]
+}
