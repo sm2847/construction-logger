@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>University of Cambridge - Construction Activity Logger</title>
+    <style>
+        :root {
+            --cambridge-blue: #A3C1AD;
+            --dark-cambridge: #003E3E;
+            --oxford-dark: #1E293B;
+            --bg-light: #F8FAFC;
+            --border-color: #E2E8F0;
+            --success-green: #15803D;
+            --danger-red: #B91C1C;
+            --warning-amber: #B45309;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: var(--bg-light); 
+            color: var(--oxford-dark);
+            line-height: 1.5;
+        }
+
+        /* Institutional Header Block */
+        .header-banner {
+            background-color: var(--dark-cambridge);
+            color: white;
+            padding: 30px 40px;
+            border-bottom: 5px solid var(--cambridge-blue);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-banner h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header-banner p {
+            margin: 5px 0 0 0;
+            color: var(--cambridge-blue);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 { 
+            color: var(--dark-cambridge); 
+            font-size: 20px;
+            border-bottom: 2px solid var(--cambridge-blue);
+            padding-bottom: 8px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        /* Tables styling */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th, td { 
+            padding: 14px 16px; 
+        }
+
+        th { 
+            background: #F1F5F9; 
+            color: var(--dark-cambridge);
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background-color: #F8FAFC;
+        }
+
+        /* Form Layout Optimization */
+        form { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 8px; 
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group-full {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--oxford-dark);
+            margin-bottom: 6px;
+        }
+
+        input, textarea, select { 
+            width: 100%; 
+            padding: 10px 12px; 
+            border: 1px solid #CBD5E1;
+            border-radius: 6px;
+            background-color: #FFF;
+            font-size: 14px;
+            color: var(--oxford-dark);
+            box-sizing: border-box; 
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--dark-cambridge);
+            box-shadow: 0 0 0 3px rgba(163, 193, 173, 0.3);
+        }
+
+        /* Professional Accent Buttons */
+        .btn-submit { 
+            background: var(--dark-cambridge); 
+            color: white; 
+            border: 1px solid var(--dark-cambridge);
+            padding: 12px 24px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: 600;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #002B2B;
+        }
+
+        .btn-edit { 
+            background: #FEF3C7; 
+            color: var(--warning-amber); 
+            padding: 6px 12px; 
+            text-decoration: none; 
+            border-radius: 4px; 
+            font-size: 13px; 
+            font-weight: 600;
+            margin-right: 5px; 
+        }
+
+        .btn-edit:hover { background: #FDE68A; }
+
+        .btn-delete { 
+            background: #FEE2E2; 
+            color: var(--danger-red); 
+            padding: 6px 12px; 
+            text-decoration: none; 
+            border-radius: 4px; 
+            font-size: 13px; 
+            font-weight: 600;
+        }
+
+        .btn-delete:hover { background: #FCA5A5; }
+
+        .btn-cancel { 
+            background: #E2E8F0; 
+            color: #475569; 
+            padding: 12px 24px; 
+            text-decoration: none; 
+            display: inline-block; 
+            margin-left: 10px; 
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Status Pills */
+        .status-pill {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-yes { background: #DCFCE7; color: var(--success-green); }
+        .status-no { background: #FEE2E2; color: var(--danger-red); }
+
+        .code-badge {
+            background: #E2E8F0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+            color: var(--dark-cambridge);
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-banner">
+    <h1>Construction Activity Logger</h1>
+    <p>Department of Engineering — GD1 Offsite Construction Project</p>
+</div>
+
+<div class="container">
+
+    <h2>Planned Activities</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>ID</th>
+                    <th>Activity Description</th>
+                    <th>Planned Labor</th>
+                    <th>Allocated Duration</th>
+                    <th>Dependencies</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in activities %}
+                <tr>
+                    <td><span class="code-badge">{{ activity.code }}</span></td>
+                    <td><code>{{ activity.id }}</code></td>
+                    <td style="font-weight: 500;">{{ activity.activity }}</td>
+                    <td>{{ activity.planned_workers }} workers</td>
+                    <td>{{ activity.planned_duration }} hrs</td>
+                    <td><span style="color: #64748B;">{{ activity.dependencies }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h2>{% if edit_log %} Edit Site Log Entry #{{ edit_id + 1 }} {% else %} Record Live Field Progress {% endif %}</h2>
+
+    <form method="POST" action="{% if edit_log %}/edit/{{ edit_id }}{% else %}/{% endif %}">
+        <div class="form-grid">
+            <div class="form-group-full">
+                <label>Active Work Component</label>
+                <select name="activity_code" required>
+                    {% for activity in activities %}
+                    <option value="{{ activity.code }}" {% if edit_log and edit_log.activity_code == activity.code %} selected {% endif %}>
+                        [{{ activity.code }}] {{ activity.activity }} ({{ activity.id }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label>Actual Deployment Start Time</label>
+                <input type="datetime-local" name="start_time" value="{% if edit_log %}{{ edit_log.start_time }}{% endif %}" required>
+            </div>
+
+            <div>
+                <label>Actual Deployment Completion Time</label>
+                <input type="datetime-local" name="end_time" value="{% if edit_log %}{{ edit_log.end_time }}{% endif %}" required>
+            </div>
+
+            <div>
+                <label>Verified Resource Count (Headcount Present)</label>
+                <input type="number" name="actual_workers" value="{% if edit_log %}{{ edit_log.actual_workers }}{% endif %}" required>
+            </div>
+
+            <div>
+                <label>Heavy Equipment & Machinery Utilized</label>
+                <input type="text" name="equipment" placeholder="e.g., Excavator, Tower Crane, None" value="{% if edit_log %}{{ edit_log.equipment }}{% endif %}">
+            </div>
+
+            <div class="form-group-full">
+                <label>Milestone Target Completed?</label>
+                <select name="completed">
+                    <option value="Yes" {% if edit_log and edit_log.completed == 'Yes' %} selected {% endif %}>Yes - Task verified complete</option>
+                    <option value="No" {% if edit_log and edit_log.completed == 'No' %} selected {% endif %}>No - Ongoing / Interrupted</option>
+                </select>
+            </div>
+
+            <div class="form-group-full">
+                <label>Site Inspector Field Notes / Structural Delays / Prohibitions</label>
+                <textarea name="notes" rows="4" placeholder="Describe any material constraints, weather delays, or structural adjustments... ">{% if edit_log %}{{ edit_log.notes }}{% endif %}</textarea>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button type="submit" class="btn-submit">{% if edit_log %}Save Edits & Update Data Buffer{% else %}Commit Field Log Entry{% endif %}</button>
+            {% if edit_log %}
+                <a href="/" class="btn-cancel">Cancel Modification</a>
+            {% endif %}
+        </div>
+    </form>
+
+    <h2>Database Ledger Entries (Submitted Field Logs)</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Activity</th>
+                    <th>Start Window</th>
+                    <th>End Window</th>
+                    <th>Headcount</th>
+                    <th>Equipment Allocation</th>
+                    <th>Status</th>
+                    <th>Field Inspector Notes</th>
+                    <th style="text-align: center;">Data Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td><span class="code-badge">{{ log.activity_code }}</span></td>
+                    <td style="font-size: 13px; color: #475569;">{{ log.start_time }}</td>
+                    <td style="font-size: 13px; color: #475569;">{{ log.end_time }}</td>
+                    <td style="font-weight: 600;">{{ log.actual_workers }} active</td>
+                    <td>{{ log.equipment if log.equipment else '<span style="color:#94A3B8;">None</span>' | safe }}</td>
+                    <td>
+                        {% if log.completed == 'Yes' %}
+                            <span class="status-pill status-yes">Completed</span>
+                        {% else %}
+                            <span class="status-pill status-no">Incomplete</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-style: italic; color: #334155; max-width: 250px;">{{ log.notes if log.notes else '<span style="color:#94A3B8;">No notes recorded</span>' | safe }}</td>
+                    <td style="text-align: center; white-space: nowrap;">
+                        <a href="/edit/{{ loop.index0 }}" class="btn-edit">Modify</a>
+                        <a href="/delete/{{ loop.index0 }}" class="btn-delete" onclick="return confirm('Are you sure you want to purge this record from the temporary buffer?');">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not logs %}
+                <tr>
+                    <td colspan="8" style="text-align: center; color: #94A3B8; padding: 30px;">Data ledger is currently empty. Submit progress vectors above.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
