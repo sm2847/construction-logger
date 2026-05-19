@@ -112,6 +112,16 @@
             font-weight: 500;
         }
 
+        .badge-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-progress { background: #FEF3C7; color: var(--warning-amber); }
+        .status-completed { background: #DCFCE7; color: var(--success-green); }
+        .status-notstarted { background: #E2E8F0; color: #475569; }
+
         /* Form Layout Optimization */
         form { 
             background: white; 
@@ -183,6 +193,7 @@
             font-size: 13px; 
             font-weight: 600;
             margin-right: 5px; 
+            display: inline-block;
         }
 
         .btn-edit:hover { background: #FDE68A; }
@@ -195,6 +206,7 @@
             border-radius: 4px; 
             font-size: 13px; 
             font-weight: 600;
+            display: inline-block;
         }
 
         .btn-delete:hover { background: #FCA5A5; }
@@ -207,7 +219,10 @@
             display: inline-block; 
             margin-left: 10px; 
             border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
         }
+        .btn-cancel:hover { background: #CBD5E1; }
     </style>
 </head>
 <body>
@@ -251,50 +266,19 @@
             </table>
         </div>
 
-        <h2>Record Live Field Progress</h2>
-        <form method="POST" action="/log">
+        <h2>
+            {% if edit_log %}
+                Modify Field Log Entry #{{ edit_id + 1 }}
+            {% else %}
+                Record Live Field Progress
+            {% endif %}
+        </h2>
+        
+        <form method="POST" action="{% if edit_log %}/edit/{{ edit_id }}{% else %}/{% endif %}">
             <div class="form-grid">
                 <div>
                     <label for="activity_code">Activity Code</label>
                     <select id="activity_code" name="activity_code" required>
-                        <option value="" disabled selected>Select Activity...</option>
+                        <option value="" disabled {% if not edit_log %}selected{% endif %}>Select Activity...</option>
                         {% for code, details in activities.items() %}
-                        <option value="{{ code }}">{{ code }} - {{ details.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div>
-                    <label for="actual_workers">Actual Workers Present</label>
-                    <input type="number" id="actual_workers" name="actual_workers" min="0" required placeholder="e.g. 4">
-                </div>
-
-                <div>
-                    <label for="actual_duration">Actual Duration Spent (Hours)</label>
-                    <input type="number" id="actual_duration" name="actual_duration" step="0.1" min="0" required placeholder="e.g. 2.5">
-                </div>
-
-                <div>
-                    <label for="status">Operational Status</label>
-                    <select id="status" name="status" required>
-                        <option value="Not Started">Not Started</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Completed">Completed</option>
-                    </select>
-                </div>
-
-                <div class="form-group-full">
-                    <label for="notes">Field Observations / Delays Notes</label>
-                    <textarea id="notes" name="notes" rows="3" placeholder="Log constraints, weather anomalies, or structural issues encountered..."></textarea>
-                </div>
-            </div>
-
-            <div style="margin-top: 25px;">
-                <button type="submit" class="btn-submit">Commit Field Log Entry</button>
-            </div>
-        </form>
-
-    </div>
-
-</body>
-</html>
+                        <option value="{{ code }}" {% if edit_log and edit
