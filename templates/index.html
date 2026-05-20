@@ -273,81 +273,63 @@
             </table>
         </div>
 
-        <h2>
-            {% if edit_log %}
-                Modify Field Log Entry #{{ edit_id + 1 }}
-            {% else %}
-                Record Live Field Progress
-            {% endif %}
-        </h2>
+        <h2>Record Live Field Progress</h2>
         
-        <form method="POST" action="{% if edit_log %}/edit/{{ edit_id }}{% else %}/log{% endif %}">
+        <form method="POST" action="/log">
             <div class="form-grid">
                 <div>
                     <label for="activity_code">Activity Code</label>
                     <select id="activity_code" name="activity_code" required>
-                        <option value="" disabled {% if not edit_log %}selected{% endif %}>Select Activity...</option>
+                        <option value="" disabled selected>Select Activity...</option>
                         {% for code, details in activities.items() %}
-                        <option value="{{ code }}" {% if edit_log and edit_log.activity_code == code %}selected{% endif %}>
-                            {{ code }} - {{ details.name }}
-                        </option>
+                        <option value="{{ code }}">{{ code }} - {{ details.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 
                 <div>
                     <label for="actual_workers">Actual Workers Present</label>
-                    <input type="number" id="actual_workers" name="actual_workers" min="0" required 
-                           value="{% if edit_log %}{{ edit_log.actual_workers }}{% endif %}" placeholder="e.g. 4">
+                    <input type="number" id="actual_workers" name="actual_workers" min="0" required placeholder="e.g. 4">
                 </div>
 
                 <div>
                     <label for="start_time">Shift Start Time</label>
-                    <input type="time" id="start_time" name="start_time" required 
-                           value="{% if edit_log %}{{ edit_log.start_time }}{% endif %}">
+                    <input type="time" id="start_time" name="start_time" required>
                 </div>
 
                 <div>
                     <label for="finish_time">Shift Finish Time</label>
-                    <input type="time" id="finish_time" name="finish_time" required 
-                           value="{% if edit_log %}{{ edit_log.finish_time }}{% endif %}">
+                    <input type="time" id="finish_time" name="finish_time" required>
                 </div>
 
                 <div>
                     <label for="quantity_done">Quantity of Work Completed</label>
-                    <input type="number" id="quantity_done" name="quantity_done" min="0" step="0.1" required
-                           value="{% if edit_log %}{{ edit_log.quantity_done }}{% endif %}" placeholder="e.g. 24, 50, 3.5">
+                    <input type="number" id="quantity_done" name="quantity_done" min="0" step="0.1" required placeholder="e.g. 24, 50, 3.5">
                 </div>
 
                 <div>
                     <label for="quantity_unit">Unit of Measurement</label>
-                    <input type="text" id="quantity_unit" name="quantity_unit" required
-                           value="{% if edit_log %}{{ edit_log.quantity_unit }}{% endif %}" placeholder="e.g. Nos., sqm, linear meters">
+                    <input type="text" id="quantity_unit" name="quantity_unit" required placeholder="e.g. Nos., sqm, linear meters">
                 </div>
 
                 <div class="form-group-full">
                     <label for="completion_percentage">Task Completion Progress</label>
                     <div class="range-container">
-                        <input type="range" id="completion_percentage" name="completion_percentage" min="0" max="100" step="5"
-                               value="{% if edit_log %}{{ edit_log.completion_percentage }}{% else %}0{% endif %}"
-                               oninput="this.nextElementSibling.value = this.value + '%'">
-                        <output style="font-weight: bold; width: 45px;">{% if edit_log %}{{ edit_log.completion_percentage }}{% else %}0{% endif %}%</output>
+                        <input type="range" id="completion_percentage" name="completion_percentage" min="0" max="100" step="5" value="0" oninput="this.nextElementSibling.value = this.value + '%'">
+                        <output style="font-weight: bold; width: 45px;">0%</output>
                     </div>
                 </div>
 
                 <div class="form-group-full">
                     <label for="notes">Other Important Notes to Add</label>
-                    <textarea id="notes" name="notes" rows="4" placeholder="Add reasons for any delays, site constraints, or build variances from the plan (e.g., 'Rain delayed deck alignment by 30 mins', 'Encountered utility conflict at abutment structure', 'Installed 45 out of 60 structural bolts due to crane availability')...">{% if edit_log %}{{ edit_log.notes }}{% endif %}</textarea>
+                    <textarea id="notes" name="notes" rows="4" placeholder="Add reasons for any delays, site constraints, or build variances from the plan (e.g., 'Rain delayed deck alignment by 30 mins', 'Encountered utility conflict at abutment structure', 'Installed 45 out of 60 structural bolts due to crane availability')..."></textarea>
                 </div>
             </div>
 
             <div style="margin-top: 25px;">
                 <button type="submit" style="background: var(--dark-cambridge); color: white; border: none; padding: 12px 24px; font-weight: 600; border-radius: 6px; cursor: pointer;">
-                    {% if edit_log %}Save Changes{% else %}Commit Field Log Entry{% endif %}
+                    Commit Field Log Entry
                 </button>
-                {% if edit_log %}
-                    <a href="/" style="background: #E2E8F0; color: #475569; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-left: 10px; font-weight: 600; display: inline-block;">Cancel Edit</a>
-                {% endif %}
             </div>
         </form>
 
@@ -357,7 +339,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>Submission Timestamp</th>
                         <th>Activity</th>
                         <th>Actual Workers</th>
                         <th>Start Time</th>
@@ -367,13 +349,12 @@
                         <th>Work Quantity Done</th>
                         <th>Progress (%)</th>
                         <th>Other Notes</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for log in logs %}
                     <tr>
-                        <td>{{ loop.index }}</td>
+                        <td><small style="color: #64748B; font-weight: 600;">⏱️ {{ log.timestamp }}</small></td>
                         <td>
                             <strong>{{ log.activity_code }}</strong> 
                             {% if log.activity_code in activities %}
@@ -402,10 +383,6 @@
                         <td><strong>{{ log.quantity_done }} {{ log.quantity_unit }}</strong></td>
                         <td><strong>{{ log.completion_percentage }}%</strong></td>
                         <td><small>{{ log.notes or '-' }}</small></td>
-                        <td>
-                            <a href="/edit/{{ loop.index0 }}" style="background: #FEF3C7; color: var(--warning-amber); padding: 4px 8px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px; margin-right: 5px;">Edit</a>
-                            <a href="/delete/{{ loop.index0 }}" style="background: #FEE2E2; color: var(--danger-red); padding: 4px 8px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px;" onclick="return confirm('Are you sure you want to delete this log entry?');">Delete</a>
-                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
