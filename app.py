@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 
-# Import the InfluxDB client modules
+# Import the secure persistent database driver nodes
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 
@@ -13,8 +13,8 @@ app = Flask(__name__)
 # ---------------------------------------------------------
 # PERSISTENT TIME-SERIES DATABASE CONFIGURATION NODES
 # ---------------------------------------------------------
-INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com"  # Your InfluxDB Cloud instance URL
-INFLUX_TOKEN = "YOUR_ACTUAL_INFLUXDB_SECRET_TOKEN_STRING"     # Your secure security token string
+INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com"  # Replace with your actual InfluxDB instance URL
+INFLUX_TOKEN = "YOUR_ACTUAL_INFLUXDB_SECRET_TOKEN_STRING"     # Replace with your security token
 INFLUX_ORG = "YOUR_ORGANIZATION_EMAIL_OR_NAME"
 INFLUX_BUCKET = "construction_metrics"
 
@@ -28,7 +28,7 @@ query_api = db_client.query_api()
 def index():
     activity_logs = []
     
-    # Clean Query: Fetch fields stored over the past 30 days
+    # Robust query strategy: pulls data from the last 30 days and aggregates safely
     flux_query = f'''
     from(bucket: "{INFLUX_BUCKET}")
         |> range(start: -30d)
@@ -43,10 +43,9 @@ def index():
             for record in table.records:
                 # Capture the precise timestamp stored natively by the database engine
                 raw_time = record.get_time()
-                # Format into a clean, human-readable layout option
                 formatted_timestamp = raw_time.strftime("%d %b %Y, %H:%M:%S")
                 
-                # Extract values safely while defaulting to clean alternative types
+                # Extract values with safe defaults to prevent any rendering drops
                 activity_logs.append({
                     "timestamp": formatted_timestamp,
                     "activity_code": record.values.get("activity_code"),
@@ -60,7 +59,7 @@ def index():
                     "notes": record.values.get("notes", "")
                 })
     except Exception as e:
-        print(f"⚠️ Database query skipped or empty bucket configuration: {e}")
+        print(f"⚠️ InfluxDB Sync Warning: {e}")
         activity_logs = []
 
     return render_template(
@@ -96,7 +95,10 @@ def log_activity():
         except ValueError:
             actual_duration = 0.0
 
-    # Build a clean time-series telemetry metrics object point
+    # Ensure single-timestamp execution by creating a unified UTC time object
+    current_utc_time = datetime.utcnow()
+
+    # Bundle form parameters into an immutable time-series data point
     point = Point("field_log_events") \
         .field("activity_code", str(activity_code)) \
         .field("actual_workers", int(request.form.get("actual_workers") or 0)) \
@@ -107,7 +109,7 @@ def log_activity():
         .field("quantity_unit", str(request.form.get("quantity_unit") or "")) \
         .field("completion_percentage", int(request.form.get("completion_percentage") or 0)) \
         .field("notes", str(request.form.get("notes") or "")) \
-        .time(datetime.utcnow(), WritePrecision.NS)  # Exact automated generation time stamp
+        .time(current_utc_time, WritePrecision.NS)  # Exact automated generation timestamp
 
     try:
         write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
@@ -119,7 +121,6 @@ def log_activity():
 
 @app.route("/delete/<int:log_id>")
 def delete_log(log_id):
-    # Relational redirects process cleanly for displaying persistent rows
     return redirect(url_for('index'))
 
 
