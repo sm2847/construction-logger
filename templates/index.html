@@ -155,7 +155,7 @@
             </div>
         </form>
 
-        <h2>Live Field Logs (InfluxDB Persistent Data)</h2>
+        <h2>Recorded Activity Logs</h2>
         <div class="table-container">
             <table>
                 <thead>
@@ -201,7 +201,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="8" style="text-align: center; color: #64748B; padding: 30px;">No field activities logged in InfluxDB yet.</td>
+                        <td colspan="8" style="text-align: center; color: #64748B; padding: 30px;">No recorded activities yet.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -215,7 +215,6 @@
         }
 
         function modifyLogEntry(button) {
-            // Populate form fields back up immediately when clicking Modify
             document.getElementById('activity_code').value = button.getAttribute('data-code');
             document.getElementById('actual_workers').value = button.getAttribute('data-workers');
             document.getElementById('shift_start').value = button.getAttribute('data-start');
@@ -229,7 +228,6 @@
             
             document.getElementById('notes').value = button.getAttribute('data-notes');
             
-            // Adjust header focus accent
             document.getElementById('submitBtn').innerText = "Save Modified Changes";
             document.getElementById('logForm').scrollIntoView({ behavior: 'smooth' });
         }

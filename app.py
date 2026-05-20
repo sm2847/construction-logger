@@ -1,28 +1,62 @@
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 from activities import activities
-from influxdb_client import InfluxDBClient, Point
-from influxdb_client.client.write_api import SYNCHRONOUS
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import sys
+import os
 
 app = Flask(__name__)
 
-# --- INFLUXDB CONFIGURATION ---
-INFLUX_URL = "postgresql://postgres:Pass1234!GD12026@db.iipzcopzoarovdgrsbgb.supabase.co:5432/postgres"      # Change if your InfluxDB is hosted elsewhere
-INFLUX_TOKEN = "YOUR_SUPER_SECRET_TOKEN"   # Replace with your actual InfluxDB token
-INFLUX_ORG = "YOUR_ORG_NAME"               # Replace with your organization name
-INFLUX_BUCKET = "construction_logs"        # Replace with your bucket name
+# --- SECURE DATABASE INJECTION ---
+# The exclamation mark in your password has been encoded to %21 to prevent connection crashes.
+DB_URI = os.getenv(
+    "DATABASE_URL", 
+    "postgresql://postgres:Pass1234%21GD12026@db.iipzcopzoarovdgrsbgb.supabase.co:5432/postgres"
+)
 
-client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
-write_api = client.write_api(write_options=SYNCHRONOUS)
-query_api = client.query_api()
+def get_db_connection():
+    # Connects to Supabase Cloud with a 5-second failure timeout guard
+    conn = psycopg2.connect(DB_URI, connect_timeout=5)
+    return conn
+
+def init_db():
+    """Initializes the underlying PostgreSQL schema structure if missing"""
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS field_logs (
+                id SERIAL PRIMARY KEY,
+                time_saved TEXT NOT NULL,
+                activity_code TEXT NOT NULL,
+                actual_workers INTEGER NOT NULL,
+                shift_start TEXT NOT NULL,
+                shift_finish TEXT NOT NULL,
+                actual_duration REAL NOT NULL,
+                quantity TEXT NOT NULL,
+                unit TEXT NOT NULL,
+                progress INTEGER NOT NULL,
+                notes TEXT
+            );
+        ''')
+        conn.commit()
+        cur.close()
+        conn.close()
+        print("✅ Database connection successful and tables initialized.")
+    except Exception as e:
+        print(f"❌ DATABASE INITIALIZATION ERROR ON STARTUP: {e}", file=sys.stderr)
+
+# Run database schema auto-check on startup
+init_db()
 
 def calculate_duration(start_str, finish_str):
-    """Calculates time difference in hours between HH:MM strings"""
+    """Calculates time difference in decimal hours across shift timestamps"""
     try:
         fmt = "%H:%M"
         tdelta = datetime.strptime(finish_str, fmt) - datetime.strptime(start_str, fmt)
         hours = tdelta.total_seconds() / 3600.0
-        if hours < 0: # Handles shifts passing through midnight
+        if hours < 0: 
             hours += 24
         return round(hours, 2)
     except:
@@ -31,7 +65,6 @@ def calculate_duration(start_str, finish_str):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        # 1. Capture fields from your new visual layout
         activity_code = request.form.get("activity_code")
         actual_workers = int(request.form.get("actual_workers", 0))
         shift_start = request.form.get("shift_start")
@@ -41,58 +74,36 @@ def index():
         progress = request.form.get("progress", "0")
         notes = request.form.get("notes", "")
         
-        # Calculate duration in hours based on input times
         actual_duration = calculate_duration(shift_start, shift_finish)
-        log_timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+        log_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # 2. Write Data Point to InfluxDB
-        point = Point("field_logs") \
-            .tag("activity_code", activity_code) \
-            .field("actual_workers", actual_workers) \
-            .field("shift_start", shift_start) \
-            .field("shift_finish", shift_finish) \
-            .field("actual_duration", actual_duration) \
-            .field("quantity", quantity) \
-            .field("unit", unit) \
-            .field("progress", int(progress)) \
-            .field("notes", notes) \
-            .field("log_timestamp", log_timestamp)
-        
-        write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute('''
+                INSERT INTO field_logs (time_saved, activity_code, actual_workers, shift_start, shift_finish, actual_duration, quantity, unit, progress, notes)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (log_timestamp, activity_code, actual_workers, shift_start, shift_finish, actual_duration, quantity, unit, int(progress), notes))
+            conn.commit()
+            cur.close()
+            conn.close()
+            print("🎉 Log successfully committed to Supabase!")
+        except Exception as e:
+            print(f"❌ CRITICAL STORAGE ERROR: {e}", file=sys.stderr)
+
         return redirect(url_for('index'))
 
-    # --- GET REQUEST: READ ALL LOGS FROM INFLUXDB FOR THE TABLE ---
-    # Fetching records from the last 30 days to populate the grid
-    query = f'''
-    from(bucket: "{INFLUX_BUCKET}")
-      |> range(start: -30d)
-      |> filter(fn: (r) => r["_measurement"] == "field_logs")
-      |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
-    '''
-    
+    # GET Request: Fetch logs matrix to draw UI grid
     records = []
     try:
-        tables = query_api.query(query)
-        for table in tables:
-            for index, record in enumerate(table.records):
-                records.append({
-                    "id": index, # Used for targeting edits
-                    "time_saved": record.values.get("log_timestamp", record.get_time().strftime("%Y-%m-%d %H:%M:%S")),
-                    "activity_code": record.values.get("activity_code"),
-                    "actual_workers": record.values.get("actual_workers", 0),
-                    "shift_start": record.values.get("shift_start", "--:--"),
-                    "shift_finish": record.values.get("shift_finish", "--:--"),
-                    "actual_duration": record.values.get("actual_duration", 0.0),
-                    "quantity": record.values.get("quantity", "0"),
-                    "unit": record.values.get("unit", ""),
-                    "progress": record.values.get("progress", 0),
-                    "notes": record.values.get("notes", "")
-                })
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute('SELECT * FROM field_logs ORDER BY id DESC;')
+        records = cur.fetchall()
+        cur.close()
+        conn.close()
     except Exception as e:
-        print(f"InfluxDB Query Error or Empty Bucket: {e}")
-
-    # Reverse records list to show the newest entries at the very top of your table
-    records.reverse()
+        print(f"❌ ERROR LOADING LOG MATRIX: {e}", file=sys.stderr)
 
     return render_template(
         "index.html",
@@ -100,13 +111,6 @@ def index():
         logs=records,
         edit_log=None
     )
-
-@app.route("/edit", methods=["POST"])
-def edit_log():
-    # Overwriting/Editing in InfluxDB works by sending a point with the exact same 
-    # timestamp tag or handling updates via rewriting points. 
-    # For a simple solution, we write the modified entry as a fresh historical record!
-    return redirect(url_for('index'))
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
