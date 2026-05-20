@@ -7,7 +7,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 app = Flask(__name__)
 
 # --- INFLUXDB CONFIGURATION ---
-INFLUX_URL = "http://localhost:8086"       # Change if your InfluxDB is hosted elsewhere
+INFLUX_URL = "postgresql://postgres:Pass1234!GD12026@db.iipzcopzoarovdgrsbgb.supabase.co:5432/postgres"      # Change if your InfluxDB is hosted elsewhere
 INFLUX_TOKEN = "YOUR_SUPER_SECRET_TOKEN"   # Replace with your actual InfluxDB token
 INFLUX_ORG = "YOUR_ORG_NAME"               # Replace with your organization name
 INFLUX_BUCKET = "construction_logs"        # Replace with your bucket name
