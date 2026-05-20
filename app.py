@@ -36,7 +36,7 @@ def log_activity():
             
             # Handle overnight shifts gracefully if finish time is past midnight
             if total_seconds < 0:
-                total_seconds += 86400 # Add seconds in a single day
+                total_seconds += 86400 # Seconds in a day
                 
             actual_duration = round(total_seconds / 3600.0, 2)
         except ValueError:
@@ -48,10 +48,7 @@ def log_activity():
         "start_time": start_time_str,
         "finish_time": finish_time_str,
         "actual_duration": actual_duration,
-        "operational_status": request.form.get("status"),
         "completion_percentage": request.form.get("completion_percentage"),
-        "quantity_done": request.form.get("quantity_done"),
-        "quantity_unit": request.form.get("quantity_unit"),
         "notes": request.form.get("notes")
     }
     activity_logs.append(log)
@@ -92,10 +89,7 @@ def edit_log(log_id):
             "start_time": start_time_str,
             "finish_time": finish_time_str,
             "actual_duration": actual_duration,
-            "operational_status": request.form.get("status"),
             "completion_percentage": request.form.get("completion_percentage"),
-            "quantity_done": request.form.get("quantity_done"),
-            "quantity_unit": request.form.get("quantity_unit"),
             "notes": request.form.get("notes")
         }
         return redirect(url_for('index'))
