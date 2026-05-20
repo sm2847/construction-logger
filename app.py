@@ -8,20 +8,15 @@ import os
 
 app = Flask(__name__)
 
-# --- SECURE DATABASE INJECTION ---
-# The exclamation mark in your password has been encoded to %21 to prevent connection crashes.
-DB_URI = os.getenv(
-    "DATABASE_URL", 
-    "postgresql://postgres:Pass1234%21GD12026@db.iipzcopzoarovdgrsbgb.supabase.co:5432/postgres"
-)
+# Fallback URI string with URL-encoded password (%21 used to safely escape the exclamation mark)
+FALLBACK_URI = "postgresql://postgres:Pass1234%21GD12026@db.iipzcopzoarovdgrsbgb.supabase.co:5432/postgres"
+DB_URI = os.environ.get("DATABASE_URL", FALLBACK_URI)
 
 def get_db_connection():
-    # Connects to Supabase Cloud with a 5-second failure timeout guard
-    conn = psycopg2.connect(DB_URI, connect_timeout=5)
-    return conn
+    return psycopg2.connect(DB_URI, connect_timeout=10)
 
 def init_db():
-    """Initializes the underlying PostgreSQL schema structure if missing"""
+    """Initializes the database table relation if it does not exist"""
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -43,15 +38,14 @@ def init_db():
         conn.commit()
         cur.close()
         conn.close()
-        print("✅ Database connection successful and tables initialized.")
+        print("✅ Database connection successful and tables checked.")
     except Exception as e:
-        print(f"❌ DATABASE INITIALIZATION ERROR ON STARTUP: {e}", file=sys.stderr)
+        print(f"❌ DATABASE INITIALIZATION ERROR: {e}", file=sys.stderr)
 
-# Run database schema auto-check on startup
+# Run database configuration checks immediately on launch
 init_db()
 
 def calculate_duration(start_str, finish_str):
-    """Calculates time difference in decimal hours across shift timestamps"""
     try:
         fmt = "%H:%M"
         tdelta = datetime.strptime(finish_str, fmt) - datetime.strptime(start_str, fmt)
@@ -87,13 +81,12 @@ def index():
             conn.commit()
             cur.close()
             conn.close()
-            print("🎉 Log successfully committed to Supabase!")
         except Exception as e:
-            print(f"❌ CRITICAL STORAGE ERROR: {e}", file=sys.stderr)
+            print(f"❌ ERROR SAVING ENTRY: {e}", file=sys.stderr)
 
         return redirect(url_for('index'))
 
-    # GET Request: Fetch logs matrix to draw UI grid
+    # GET Request: Pull logs matrix rows
     records = []
     try:
         conn = get_db_connection()
@@ -103,7 +96,7 @@ def index():
         cur.close()
         conn.close()
     except Exception as e:
-        print(f"❌ ERROR LOADING LOG MATRIX: {e}", file=sys.stderr)
+        print(f"❌ ERROR READING DATABASE LOG MATRIX: {e}", file=sys.stderr)
 
     return render_template(
         "index.html",

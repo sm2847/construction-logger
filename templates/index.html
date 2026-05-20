@@ -11,59 +11,40 @@
             --border-color: #E2E8F0;
             --success-green: #15803D;
         }
-
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            margin: 0; padding: 0; background-color: var(--bg-light); color: var(--oxford-dark);
-            line-height: 1.5;
-        }
-
-        .header-banner {
-            background-color: var(--dark-cambridge); color: white; padding: 30px 40px;
-            border-bottom: 5px solid var(--cambridge-blue); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background-color: var(--bg-light); color: var(--oxford-dark); line-height: 1.5; }
+        .header-banner { background-color: var(--dark-cambridge); color: white; padding: 30px 40px; border-bottom: 5px solid var(--cambridge-blue); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         .header-banner h1 { margin: 0; font-size: 28px; font-weight: 700; }
         .header-banner p { margin: 5px 0 0 0; color: var(--cambridge-blue); font-size: 14px; text-transform: uppercase; font-weight: 600; }
         .container { max-width: 1300px; margin: 40px auto; padding: 0 20px; }
         h2 { color: var(--dark-cambridge); font-size: 20px; border-bottom: 2px solid var(--cambridge-blue); padding-bottom: 8px; margin-top: 40px; margin-bottom: 20px; }
-
         .table-container { background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 30px; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
         th, td { padding: 14px 16px; }
         th { background: #F1F5F9; color: var(--dark-cambridge); font-weight: 600; border-bottom: 2px solid var(--border-color); }
         tr { border-bottom: 1px solid var(--border-color); }
         tbody tr:hover { background-color: #F8FAFC; }
-
         form { background: white; padding: 30px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         .form-group-full { grid-column: span 2; }
         .slider-container { display: flex; align-items: center; gap: 15px; grid-column: span 2; }
         .slider-container input { flex-grow: 1; }
         .slider-value { font-weight: bold; width: 40px; text-align: right; }
-        
         label { display: block; font-size: 13px; font-weight: 600; color: var(--oxford-dark); margin-bottom: 6px; }
         input, textarea, select { width: 100%; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--dark-cambridge); box-shadow: 0 0 0 3px rgba(163, 193, 173, 0.3); }
-
         .btn-submit { background: var(--dark-cambridge); color: white; border: none; padding: 12px 24px; cursor: pointer; font-size: 14px; font-weight: 600; border-radius: 6px; }
         .btn-submit:hover { background: #002B2B; }
         .btn-edit { background: #FEF3C7; color: #B45309; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;}
-        
         .badge-dependency { background: #EDF2F7; color: #4A5568; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
         .progress-bar-fill { background-color: var(--dark-cambridge); height: 6px; border-radius: 3px; }
         .progress-bar-bg { background-color: #E2E8F0; width: 100px; height: 6px; border-radius: 3px; display: inline-block; margin-right: 8px; vertical-align: middle;}
     </style>
 </head>
 <body>
-
     <div class="header-banner">
         <h1>Department of Engineering</h1>
         <p>GD1 Construction Project - Activity and Resource Logger</p>
     </div>
-
     <div class="container">
-        
         <h2>Planned Activities Baseline</h2>
         <div class="table-container">
             <table>
@@ -108,32 +89,26 @@
                         {% endfor %}
                     </select>
                 </div>
-                
                 <div>
                     <label for="actual_workers">Actual Workers Present</label>
                     <input type="number" id="actual_workers" name="actual_workers" min="0" required placeholder="e.g. 4">
                 </div>
-
                 <div>
                     <label for="shift_start">Shift Start Time</label>
                     <input type="time" id="shift_start" name="shift_start" required>
                 </div>
-
                 <div>
                     <label for="shift_finish">Shift Finish Time</label>
                     <input type="time" id="shift_finish" name="shift_finish" required>
                 </div>
-
                 <div>
                     <label for="quantity">Quantity of Work Completed</label>
                     <input type="text" id="quantity" name="quantity" required placeholder="e.g. 24, 50, 3.5">
                 </div>
-
                 <div>
                     <label for="unit">Unit of Measurement</label>
                     <input type="text" id="unit" name="unit" required placeholder="e.g. Nos., sqm, linear meters">
                 </div>
-
                 <div class="slider-container">
                     <div style="width: 100%;">
                         <label for="progress">Task Completion Progress</label>
@@ -143,13 +118,11 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="form-group-full">
                     <label for="notes">Other Important Notes to Add</label>
-                    <textarea id="notes" name="notes" rows="3" placeholder="Add reasons for any delays, site constraints..."></textarea>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Add reasons for any delays..."></textarea>
                 </div>
             </div>
-
             <div style="margin-top: 25px;">
                 <button type="submit" class="btn-submit" id="submitBtn">Commit Field Log Entry</button>
             </div>
@@ -208,12 +181,8 @@
             </table>
         </div>
     </div>
-
     <script>
-        function updateSliderOutput(val) {
-            document.getElementById('sliderValue').innerText = val + '%';
-        }
-
+        function updateSliderOutput(val) { document.getElementById('sliderValue').innerText = val + '%'; }
         function modifyLogEntry(button) {
             document.getElementById('activity_code').value = button.getAttribute('data-code');
             document.getElementById('actual_workers').value = button.getAttribute('data-workers');
@@ -221,13 +190,10 @@
             document.getElementById('shift_finish').value = button.getAttribute('data-finish');
             document.getElementById('quantity').value = button.getAttribute('data-quantity');
             document.getElementById('unit').value = button.getAttribute('data-unit');
-            
-            const progressVal = button.getAttribute('data-progress');
-            document.getElementById('progress').value = progressVal;
-            document.getElementById('sliderValue').innerText = progressVal + '%';
-            
+            const pVal = button.getAttribute('data-progress');
+            document.getElementById('progress').value = pVal;
+            document.getElementById('sliderValue').innerText = pVal + '%';
             document.getElementById('notes').value = button.getAttribute('data-notes');
-            
             document.getElementById('submitBtn').innerText = "Save Modified Changes";
             document.getElementById('logForm').scrollIntoView({ behavior: 'smooth' });
         }
