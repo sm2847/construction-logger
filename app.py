@@ -49,6 +49,8 @@ def log_activity():
         "finish_time": finish_time_str,
         "actual_duration": actual_duration,
         "completion_percentage": request.form.get("completion_percentage"),
+        "quantity_done": request.form.get("quantity_done"),
+        "quantity_unit": request.form.get("quantity_unit"),
         "notes": request.form.get("notes")
     }
     activity_logs.append(log)
@@ -90,6 +92,8 @@ def edit_log(log_id):
             "finish_time": finish_time_str,
             "actual_duration": actual_duration,
             "completion_percentage": request.form.get("completion_percentage"),
+            "quantity_done": request.form.get("quantity_done"),
+            "quantity_unit": request.form.get("quantity_unit"),
             "notes": request.form.get("notes")
         }
         return redirect(url_for('index'))

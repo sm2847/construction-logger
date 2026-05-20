@@ -313,6 +313,18 @@
                            value="{% if edit_log %}{{ edit_log.finish_time }}{% endif %}">
                 </div>
 
+                <div>
+                    <label for="quantity_done">Quantity of Work Completed</label>
+                    <input type="number" id="quantity_done" name="quantity_done" min="0" step="0.1" required
+                           value="{% if edit_log %}{{ edit_log.quantity_done }}{% endif %}" placeholder="e.g. 24, 50, 3.5">
+                </div>
+
+                <div>
+                    <label for="quantity_unit">Unit of Measurement</label>
+                    <input type="text" id="quantity_unit" name="quantity_unit" required
+                           value="{% if edit_log %}{{ edit_log.quantity_unit }}{% endif %}" placeholder="e.g. Nos., sqm, linear meters">
+                </div>
+
                 <div class="form-group-full">
                     <label for="completion_percentage">Task Completion Progress</label>
                     <div class="range-container">
@@ -325,7 +337,7 @@
 
                 <div class="form-group-full">
                     <label for="notes">Other Important Notes to Add</label>
-                    <textarea id="notes" name="notes" rows="4" placeholder="Log site constraints, material variances, or delay explanations here...">{% if edit_log %}{{ edit_log.notes }}{% endif %}</textarea>
+                    <textarea id="notes" name="notes" rows="4" placeholder="Add reasons for any delays, site constraints, or build variances from the plan (e.g., 'Rain delayed deck alignment by 30 mins', 'Encountered utility conflict at abutment structure', 'Installed 45 out of 60 structural bolts due to crane availability')...">{% if edit_log %}{{ edit_log.notes }}{% endif %}</textarea>
                 </div>
             </div>
 
@@ -352,6 +364,7 @@
                         <th>Finish Time</th>
                         <th>Duration Spent</th>
                         <th>Time Variance</th>
+                        <th>Work Quantity Done</th>
                         <th>Progress (%)</th>
                         <th>Other Notes</th>
                         <th>Actions</th>
@@ -386,6 +399,7 @@
                                 -
                             {% endif %}
                         </td>
+                        <td><strong>{{ log.quantity_done }} {{ log.quantity_unit }}</strong></td>
                         <td><strong>{{ log.completion_percentage }}%</strong></td>
                         <td><small>{{ log.notes or '-' }}</small></td>
                         <td>
