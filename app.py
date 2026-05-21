@@ -8,7 +8,7 @@ import sys
 
 app = Flask(__name__)
 
-# Hardcoded secure cloud connection configuration string (%21 escapes the exclamation mark)
+# Hardcoded secure cloud connection configuration string
 FALLBACK_URI = "postgresql://postgres:GD1Project2026@db.iipzcopzoarovdgrsbgb.supabase.co:5432/postgres"
 DB_URI = os.environ.get("DATABASE_URL", FALLBACK_URI)
 
@@ -19,12 +19,13 @@ def init_db():
     try:
         conn = get_db()
         cur = conn.cursor()
+        # Create table with matching text structures to prevent conversion drops
         cur.execute('''
             CREATE TABLE IF NOT EXISTS activity_logs (
                 id SERIAL PRIMARY KEY,
                 time_saved TEXT,
                 activity_code TEXT,
-                actual_workers INTEGER,
+                actual_workers TEXT,
                 start_time TEXT,
                 finish_time TEXT,
                 actual_duration REAL,
@@ -37,7 +38,7 @@ def init_db():
         conn.commit()
         cur.close()
         conn.close()
-        print("✅ DB ready with location parameters tracking schema.")
+        print("✅ DB ready and synchronized.")
     except Exception as e:
         print(f"❌ DB INIT ERROR: {e}", file=sys.stderr)
 
@@ -58,14 +59,32 @@ def calc_duration(start_str, finish_str):
 def get_logs():
     try:
         conn = get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute("SELECT * FROM activity_logs ORDER BY id DESC;")
+        cur = conn.cursor()
+        # Explicit index mapping to prevent data model dictionary dropouts
+        cur.execute("SELECT id, time_saved, activity_code, actual_workers, start_time, finish_time, actual_duration, location, quantity_done, quantity_unit, notes FROM activity_logs ORDER BY id DESC;")
         rows = cur.fetchall()
+        
+        records = []
+        for row in rows:
+            records.append({
+                "id": row[0],
+                "time_saved": row[1],
+                "activity_code": row[2],
+                "actual_workers": row[3],
+                "start_time": row[4],
+                "finish_time": row[5],
+                "actual_duration": row[6],
+                "location": row[7],
+                "quantity_done": row[8],
+                "quantity_unit": row[9],
+                "notes": row[10]
+            })
+            
         cur.close()
         conn.close()
-        return rows
+        return records
     except Exception as e:
-        print(f"❌ READ ERROR: {e}", file=sys.stderr)
+        print(f"❌ DATABASE READ ERROR: {e}", file=sys.stderr)
         return []
 
 @app.route("/", methods=["GET"])
@@ -93,7 +112,7 @@ def log_activity():
         ''', (
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             request.form.get("activity_code"),
-            int(request.form.get("actual_workers", 0)),
+            str(request.form.get("actual_workers", "0")),
             start_time_str,
             finish_time_str,
             calc_duration(start_time_str, finish_time_str),
@@ -138,7 +157,7 @@ def edit_log(log_id):
                 WHERE id=%s
             ''', (
                 request.form.get("activity_code"),
-                int(request.form.get("actual_workers", 0)),
+                str(request.form.get("actual_workers", "0")),
                 start_time_str,
                 finish_time_str,
                 calc_duration(start_time_str, finish_time_str),
@@ -157,9 +176,23 @@ def edit_log(log_id):
 
     try:
         conn = get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute("SELECT * FROM activity_logs WHERE id=%s;", (log_id,))
+        cur = conn.cursor()
+        cur.execute("SELECT id, activity_code, actual_workers, start_time, finish_time, location, quantity_done, quantity_unit, notes FROM activity_logs WHERE id=%s;", (log_id,))
         row = cur.fetchone()
+        
+        edit_log_dict = None
+        if row:
+            edit_log_dict = {
+                "id": row[0],
+                "activity_code": row[1],
+                "actual_workers": row[2],
+                "start_time": row[3],
+                "finish_time": row[4],
+                "location": row[5],
+                "quantity_done": row[6],
+                "quantity_unit": row[7],
+                "notes": row[8]
+            }
         cur.close()
         conn.close()
     except Exception as e:
@@ -170,7 +203,7 @@ def edit_log(log_id):
         "index.html",
         activities=activities,
         logs=get_logs(),
-        edit_log=row,
+        edit_log=edit_log_dict,
         edit_id=log_id
     )
 
