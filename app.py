@@ -8,7 +8,7 @@ import sys
 
 app = Flask(__name__)
 
-# Reads DATABASE_URL from Render environment variables
+# Reads DATABASE_URL securely from your Render deployment variables
 DB_URI = os.environ.get("DATABASE_URL")
 
 def get_db():
@@ -18,6 +18,7 @@ def init_db():
     try:
         conn = get_db()
         cur = conn.cursor()
+        # Schema optimized to track location profiles persistently
         cur.execute('''
             CREATE TABLE IF NOT EXISTS activity_logs (
                 id SERIAL PRIMARY KEY,
@@ -27,7 +28,7 @@ def init_db():
                 start_time TEXT,
                 finish_time TEXT,
                 actual_duration REAL,
-                completion_percentage INTEGER,
+                location TEXT,
                 quantity_done TEXT,
                 quantity_unit TEXT,
                 notes TEXT
@@ -36,7 +37,7 @@ def init_db():
         conn.commit()
         cur.close()
         conn.close()
-        print("DB ready.")
+        print("DB ready with location parameters tracking schema.")
     except Exception as e:
         print(f"DB INIT ERROR: {e}", file=sys.stderr)
 
@@ -87,7 +88,7 @@ def log_activity():
         cur.execute('''
             INSERT INTO activity_logs
             (time_saved, activity_code, actual_workers, start_time, finish_time,
-             actual_duration, completion_percentage, quantity_done, quantity_unit, notes)
+             actual_duration, location, quantity_done, quantity_unit, notes)
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         ''', (
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -96,7 +97,7 @@ def log_activity():
             start_time_str,
             finish_time_str,
             calc_duration(start_time_str, finish_time_str),
-            int(request.form.get("completion_percentage", 0)),
+            request.form.get("location"),
             request.form.get("quantity_done"),
             request.form.get("quantity_unit"),
             request.form.get("notes")
@@ -132,7 +133,7 @@ def edit_log(log_id):
             cur.execute('''
                 UPDATE activity_logs SET
                 activity_code=%s, actual_workers=%s, start_time=%s, finish_time=%s,
-                actual_duration=%s, completion_percentage=%s, quantity_done=%s,
+                actual_duration=%s, location=%s, quantity_done=%s,
                 quantity_unit=%s, notes=%s
                 WHERE id=%s
             ''', (
@@ -141,7 +142,7 @@ def edit_log(log_id):
                 start_time_str,
                 finish_time_str,
                 calc_duration(start_time_str, finish_time_str),
-                int(request.form.get("completion_percentage", 0)),
+                request.form.get("location"),
                 request.form.get("quantity_done"),
                 request.form.get("quantity_unit"),
                 request.form.get("notes"),
