@@ -1,19 +1,85 @@
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 from activities import activities
+import psycopg2
+import sys
+import os
 
 app = Flask(__name__)
 
-# Store submitted logs temporarily in memory
-activity_logs = []
+# --- PERSISTENT SUPABASE CLOUD CONFIGURATION ---
+# The password punctuation character (!) is url-encoded safely to %21 to prevent startup crashes on Render
+FALLBACK_URI = "postgresql://postgres:Pass1234%21GD12026@db.iipzcopzoarovdgrsbgb.supabase.co:5432/postgres"
+DB_URI = os.environ.get("DATABASE_URL", FALLBACK_URI)
+
+def get_db_connection():
+    """Establishes an active pipeline to your cloud relational layer"""
+    return psycopg2.connect(DB_URI, connect_timeout=10)
+
+def init_db():
+    """Creates the structural schema inside Supabase automatically if missing"""
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS field_logs (
+                id SERIAL PRIMARY KEY,
+                activity_code TEXT NOT NULL,
+                actual_workers TEXT NOT NULL,
+                start_time TEXT NOT NULL,
+                finish_time TEXT NOT NULL,
+                actual_duration REAL NOT NULL,
+                completion_percentage TEXT NOT NULL,
+                quantity_done TEXT NOT NULL,
+                quantity_unit TEXT NOT NULL,
+                notes TEXT
+            );
+        ''')
+        conn.commit()
+        cur.close()
+        conn.close()
+        print("✅ Supabase cloud persistence layer initialized successfully.")
+    except Exception as e:
+        print(f"❌ DATABASE INITIALIZATION ERROR: {e}", file=sys.stderr)
+
+# Run verification schema configurations immediately on application launch
+init_db()
+
+def get_all_logs():
+    """Fetches all entries out of Supabase in structured format for table matrix mapping"""
+    records = []
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT id, activity_code, actual_workers, start_time, finish_time, actual_duration, completion_percentage, quantity_done, quantity_unit, notes FROM field_logs ORDER BY id ASC;')
+        rows = cur.fetchall()
+        for row in rows:
+            records.append({
+                "id": row[0],
+                "activity_code": row[1],
+                "actual_workers": row[2],
+                "start_time": row[3],
+                "finish_time": row[4],
+                "actual_duration": row[5],
+                "completion_percentage": row[6],
+                "quantity_done": row[7],
+                "quantity_unit": row[8],
+                "notes": row[9]
+            })
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print(f"❌ ERROR SYNCING DASHBOARD LOG DATA MATRIX: {e}", file=sys.stderr)
+    return records
 
 @app.route("/", methods=["GET"])
 def index():
+    activity_logs = get_all_logs()
     return render_template(
         "index.html",
         activities=activities,
         logs=activity_logs,
-        edit_log=None,  # Not editing by default
+        edit_log=None,
         edit_id=None
     )
 
@@ -22,7 +88,7 @@ def log_activity():
     start_time_str = request.form.get("start_time")
     finish_time_str = request.form.get("finish_time")
     
-    # Calculate duration dynamically from clock inputs
+    # Run structural calculation delta metrics dynamically from input parameters
     actual_duration = 0.0
     if start_time_str and finish_time_str:
         try:
@@ -30,42 +96,57 @@ def log_activity():
             t1 = datetime.strptime(start_time_str, fmt)
             t2 = datetime.strptime(finish_time_str, fmt)
             
-            # Find total difference in hours
             tdelta = t2 - t1
             total_seconds = tdelta.total_seconds()
             
-            # Handle overnight shifts gracefully if finish time is past midnight
+            # Handle overnight shifts natively if completion parameters fall past midnight
             if total_seconds < 0:
-                total_seconds += 86400 # Seconds in a day
+                total_seconds += 86400
                 
             actual_duration = round(total_seconds / 3600.0, 2)
         except ValueError:
             actual_duration = 0.0
 
-    log = {
-        "activity_code": request.form.get("activity_code"),
-        "actual_workers": request.form.get("actual_workers"),
-        "start_time": start_time_str,
-        "finish_time": finish_time_str,
-        "actual_duration": actual_duration,
-        "completion_percentage": request.form.get("completion_percentage"),
-        "quantity_done": request.form.get("quantity_done"),
-        "quantity_unit": request.form.get("quantity_unit"),
-        "notes": request.form.get("notes")
-    }
-    activity_logs.append(log)
+    activity_code = request.form.get("activity_code")
+    actual_workers = request.form.get("actual_workers")
+    completion_percentage = request.form.get("completion_percentage")
+    quantity_done = request.form.get("quantity_done")
+    quantity_unit = request.form.get("quantity_unit")
+    notes = request.form.get("notes")
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('''
+            INSERT INTO field_logs (activity_code, actual_workers, start_time, finish_time, actual_duration, completion_percentage, quantity_done, quantity_unit, notes)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ''', (activity_code, actual_workers, start_time_str, finish_time_str, actual_duration, completion_percentage, quantity_done, quantity_unit, notes))
+        conn.commit()
+        cur.close()
+        conn.close()
+        print("🎉 Entry committed straight to the Supabase cloud cluster.")
+    except Exception as e:
+        print(f"❌ ERROR STREAMING ENTRY TO PERSISTENT LOG DISK: {e}", file=sys.stderr)
+
     return redirect(url_for('index'))
 
 @app.route("/delete/<int:log_id>")
 def delete_log(log_id):
-    if 0 <= log_id < len(activity_logs):
-        activity_logs.pop(log_id)
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('DELETE FROM field_logs WHERE id=%s;', (log_id,))
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print(f"❌ ERROR EXECUTING RESTRUCTURING PURGE COMMAND: {e}", file=sys.stderr)
     return redirect(url_for('index'))
 
 @app.route("/edit/<int:log_id>", methods=["GET", "POST"])
 def edit_log(log_id):
-    if log_id < 0 or log_id >= len(activity_logs):
-        return redirect(url_for('index'))
+    conn = get_db_connection()
+    cur = conn.cursor()
 
     if request.method == "POST":
         start_time_str = request.form.get("start_time")
@@ -85,24 +166,55 @@ def edit_log(log_id):
             except ValueError:
                 actual_duration = 0.0
 
-        activity_logs[log_id] = {
-            "activity_code": request.form.get("activity_code"),
-            "actual_workers": request.form.get("actual_workers"),
-            "start_time": start_time_str,
-            "finish_time": finish_time_str,
-            "actual_duration": actual_duration,
-            "completion_percentage": request.form.get("completion_percentage"),
-            "quantity_done": request.form.get("quantity_done"),
-            "quantity_unit": request.form.get("quantity_unit"),
-            "notes": request.form.get("notes")
-        }
+        activity_code = request.form.get("activity_code")
+        actual_workers = request.form.get("actual_workers")
+        completion_percentage = request.form.get("completion_percentage")
+        quantity_done = request.form.get("quantity_done")
+        quantity_unit = request.form.get("quantity_unit")
+        notes = request.form.get("notes")
+
+        try:
+            cur.execute('''
+                UPDATE field_logs 
+                SET activity_code=%s, actual_workers=%s, start_time=%s, finish_time=%s, actual_duration=%s, completion_percentage=%s, quantity_done=%s, quantity_unit=%s, notes=%s
+                WHERE id=%s
+            ''', (activity_code, actual_workers, start_time_str, finish_time_str, actual_duration, completion_percentage, quantity_done, quantity_unit, notes, log_id))
+            conn.commit()
+        except Exception as e:
+            print(f"❌ DATABASE RECORD MODIFICATION ABORTED: {e}", file=sys.stderr)
+            
+        cur.close()
+        conn.close()
         return redirect(url_for('index'))
 
+    # Fetch configuration criteria for form modification population matching target row id
+    cur.execute('SELECT id, activity_code, actual_workers, start_time, finish_time, actual_duration, completion_percentage, quantity_done, quantity_unit, notes FROM field_logs WHERE id=%s;', (log_id,))
+    row = cur.fetchone()
+    
+    target_edit_log = None
+    if row:
+        target_edit_log = {
+            "id": row[0],
+            "activity_code": row[1],
+            "actual_workers": row[2],
+            "start_time": row[3],
+            "finish_time": row[4],
+            "actual_duration": row[5],
+            "completion_percentage": row[6],
+            "quantity_done": row[7],
+            "quantity_unit": row[8],
+            "notes": row[9]
+        }
+
+    cur.close()
+    conn.close()
+
+    activity_logs = get_all_logs()
     return render_template(
         "index.html",
         activities=activities,
         logs=activity_logs,
-        edit_log=activity_logs[log_id],
+        edit_log=target_edit_log,
         edit_id=log_id
     )
 
