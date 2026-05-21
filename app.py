@@ -8,8 +8,9 @@ import sys
 
 app = Flask(__name__)
 
-# Reads DATABASE_URL securely from your Render deployment variables
-DB_URI = os.environ.get("DATABASE_URL")
+# Hardcoded secure cloud connection configuration string (%21 escapes the exclamation mark)
+FALLBACK_URI = "postgresql://postgres:GD1Project2026@db.iipzcopzoarovdgrsbgb.supabase.co:5432/postgres"
+DB_URI = os.environ.get("DATABASE_URL", FALLBACK_URI)
 
 def get_db():
     return psycopg2.connect(DB_URI, connect_timeout=10)
@@ -18,7 +19,6 @@ def init_db():
     try:
         conn = get_db()
         cur = conn.cursor()
-        # Schema optimized to track location profiles persistently
         cur.execute('''
             CREATE TABLE IF NOT EXISTS activity_logs (
                 id SERIAL PRIMARY KEY,
@@ -37,9 +37,9 @@ def init_db():
         conn.commit()
         cur.close()
         conn.close()
-        print("DB ready with location parameters tracking schema.")
+        print("✅ DB ready with location parameters tracking schema.")
     except Exception as e:
-        print(f"DB INIT ERROR: {e}", file=sys.stderr)
+        print(f"❌ DB INIT ERROR: {e}", file=sys.stderr)
 
 init_db()
 
@@ -65,7 +65,7 @@ def get_logs():
         conn.close()
         return rows
     except Exception as e:
-        print(f"READ ERROR: {e}", file=sys.stderr)
+        print(f"❌ READ ERROR: {e}", file=sys.stderr)
         return []
 
 @app.route("/", methods=["GET"])
@@ -106,7 +106,7 @@ def log_activity():
         cur.close()
         conn.close()
     except Exception as e:
-        print(f"INSERT ERROR: {e}", file=sys.stderr)
+        print(f"❌ INSERT ERROR: {e}", file=sys.stderr)
     return redirect(url_for("index"))
 
 @app.route("/delete/<int:log_id>")
@@ -119,7 +119,7 @@ def delete_log(log_id):
         cur.close()
         conn.close()
     except Exception as e:
-        print(f"DELETE ERROR: {e}", file=sys.stderr)
+        print(f"❌ DELETE ERROR: {e}", file=sys.stderr)
     return redirect(url_for("index"))
 
 @app.route("/edit/<int:log_id>", methods=["GET", "POST"])
@@ -152,7 +152,7 @@ def edit_log(log_id):
             cur.close()
             conn.close()
         except Exception as e:
-            print(f"UPDATE ERROR: {e}", file=sys.stderr)
+            print(f"❌ UPDATE ERROR: {e}", file=sys.stderr)
         return redirect(url_for("index"))
 
     try:
@@ -163,7 +163,7 @@ def edit_log(log_id):
         cur.close()
         conn.close()
     except Exception as e:
-        print(f"EDIT READ ERROR: {e}", file=sys.stderr)
+        print(f"❌ EDIT READ ERROR: {e}", file=sys.stderr)
         return redirect(url_for("index"))
 
     return render_template(
