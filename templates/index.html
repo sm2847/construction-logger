@@ -71,6 +71,13 @@
             margin-bottom: 40px;
         }
 
+        /* Sub-grid system to hold charts vertically next to description block */
+        .charts-subgrid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
         @media (max-width: 768px) {
             .analytics-grid {
                 grid-template-columns: 1fr;
@@ -206,8 +213,19 @@
     <div class="container">
         
         <div class="analytics-grid">
-            <div class="analytics-card-chart">
-                <iframe width="382" height="237" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTldeCOJ-syPDiaKJMmwr8u2YBmPTCWvXlNS4TnStWTqOx12BpS7Hgf9kBTPTwJD-qtLLYq3SZYHbbc/pubchart?oid=1078969309&amp;format=interactive"></iframe>
+            <div class="charts-subgrid">
+                
+                <div class="analytics-card-chart" style="height: 250px;">
+                    <iframe width="100%" height="100%" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTldeCOJ-syPDiaKJMmwr8u2YBmPTCWvXlNS4TnStWTqOx12BpS7Hgf9kBTPTwJD-qtLLYq3SZYHbbc/pubchart?oid=1078969309&amp;format=interactive"></iframe>
+                </div>
+
+                <div class="analytics-card-chart" style="height: 180px; padding: 12px; align-items: stretch;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: var(--dark-cambridge); text-align: left; letter-spacing: -0.2px;">
+                        ⏱️ Live CV Telemetry (Cumulative Man Hours)
+                    </h3>
+                    <iframe src="https://implicate-crease-freezing.ngrok-free.dev/d-solo/ad7kpvp/gd1-digital-team?orgId=1&panelId=2&refresh=5s" width="100%" height="100%" frameborder="0" style="border-radius: 6px;"></iframe>
+                </div>
+
             </div>
 
             <div class="analytics-card-status">
