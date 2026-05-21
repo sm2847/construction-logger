@@ -240,7 +240,7 @@
             <p style="margin: 0 0 15px 0; font-size: 14px; color: #475569; line-height: 1.6;">
                 Use the player controls below to scrub through the baseline time-lapse sequence to monitor expected bridge configuration statuses across the build timeline.
             </p>
-            <video controls style="width: 100%; max-height: 500px; background: #000; border-radius: 6px; outline: none;">
+            <video controls style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 6px; outline: none; display: block;">
                 <source src="{{ url_for('static', filename='synchro_4d_sequence.mp4') }}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
@@ -397,10 +397,10 @@
                                 {% endif %}
                             {% else %}
                                 -
-                                {% endif %}
+                            {% endif %}
                         </td>
                         <td><span style="color: var(--dark-cambridge); font-weight: 600;">{{ log.location or '-' }}</span></td>
-                        <td>return records<strong>{{ log.quantity_done }} {{ log.quantity_unit }}</strong></td>
+                        <td><strong>{{ log.quantity_done }} {{ log.quantity_unit }}</strong></td>
                         <td><small>{{ log.notes or '-' }}</small></td>
                         <td>
                             <a href="/edit/{{ log.id }}" style="background: #FEF3C7; color: var(--warning-amber); padding: 4px 8px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px; margin-right: 5px;">Edit</a>
