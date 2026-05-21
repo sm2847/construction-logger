@@ -16,10 +16,10 @@ def get_db():
     return psycopg2.connect(DB_URI, connect_timeout=10)
 
 def init_db():
+    """Forces the database schema to completely align and include the location column"""
     try:
         conn = get_db()
         cur = conn.cursor()
-        # Create table with matching text structures to prevent conversion drops
         cur.execute('''
             CREATE TABLE IF NOT EXISTS activity_logs (
                 id SERIAL PRIMARY KEY,
@@ -35,10 +35,15 @@ def init_db():
                 notes TEXT
             );
         ''')
+        # Safety fallback: Try adding the location column manually if the table already existed without it
+        try:
+            cur.execute("ALTER TABLE activity_logs ADD COLUMN location TEXT;")
+        except:
+            conn.rollback() # Ignore if the column is already there
         conn.commit()
         cur.close()
         conn.close()
-        print("✅ DB ready and synchronized.")
+        print("✅ DB ready and completely synchronized.")
     except Exception as e:
         print(f"❌ DB INIT ERROR: {e}", file=sys.stderr)
 
@@ -59,30 +64,13 @@ def calc_duration(start_str, finish_str):
 def get_logs():
     try:
         conn = get_db()
-        cur = conn.cursor()
-        # Explicit index mapping to prevent data model dictionary dropouts
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        # Using RealDictCursor ensures keys match frontend expectations automatically
         cur.execute("SELECT id, time_saved, activity_code, actual_workers, start_time, finish_time, actual_duration, location, quantity_done, quantity_unit, notes FROM activity_logs ORDER BY id DESC;")
         rows = cur.fetchall()
-        
-        records = []
-        for row in rows:
-            records.append({
-                "id": row[0],
-                "time_saved": row[1],
-                "activity_code": row[2],
-                "actual_workers": row[3],
-                "start_time": row[4],
-                "finish_time": row[5],
-                "actual_duration": row[6],
-                "location": row[7],
-                "quantity_done": row[8],
-                "quantity_unit": row[9],
-                "notes": row[10]
-            })
-            
         cur.close()
         conn.close()
-        return records
+        return rows
     except Exception as e:
         print(f"❌ DATABASE READ ERROR: {e}", file=sys.stderr)
         return []
@@ -176,23 +164,9 @@ def edit_log(log_id):
 
     try:
         conn = get_db()
-        cur = conn.cursor()
-        cur.execute("SELECT id, activity_code, actual_workers, start_time, finish_time, location, quantity_done, quantity_unit, notes FROM activity_logs WHERE id=%s;", (log_id,))
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("SELECT * FROM activity_logs WHERE id=%s;", (log_id,))
         row = cur.fetchone()
-        
-        edit_log_dict = None
-        if row:
-            edit_log_dict = {
-                "id": row[0],
-                "activity_code": row[1],
-                "actual_workers": row[2],
-                "start_time": row[3],
-                "finish_time": row[4],
-                "location": row[5],
-                "quantity_done": row[6],
-                "quantity_unit": row[7],
-                "notes": row[8]
-            }
         cur.close()
         conn.close()
     except Exception as e:
@@ -203,7 +177,7 @@ def edit_log(log_id):
         "index.html",
         activities=activities,
         logs=get_logs(),
-        edit_log=edit_log_dict,
+        edit_log=row,
         edit_id=log_id
     )
 
