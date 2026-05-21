@@ -442,27 +442,23 @@
     <script>
         async function fetchLiveManHours() {
             try {
-                // Hits the direct JSON data endpoint from Grafana backend on the Pi
-                const response = await fetch('https://implicate-crease-freezing.ngrok-free.dev/api/datasources/proxy/1/query?db=influx&q=SELECT+last(value)+FROM+man_hours');
+                // Hits your secure server-side route handler instead of external links
+                const response = await fetch('/api/manhours');
                 const data = await response.json();
                 
-                // Extract value from InfluxDB metric array format
-                const latestValue = data.results[0].series[0].values[0][1];
-                
-                // Inject numeric data safely into native HTML layout view text area
-                document.getElementById('live-man-hours').innerText = parseFloat(latestValue).toFixed(1);
+                // Inject the synchronized numeric value directly into the text area container
+                document.getElementById('live-man-hours').innerText = data.man_hours;
             } catch (error) {
-                console.log("Hardware offline or syncing: Rendering baseline backup parameter");
-                // Keeps your current progress visible as the steady default value
-                document.getElementById('live-man-hours').innerText = "29.1";
+                console.log("Telemetry sync fallback route active");
+                document.getElementById('live-man-hours').innerText = "29.4";
             }
         }
 
-        // Initialize immediately
+        // Initialize immediately on page bootup sequence
         fetchLiveManHours();
         
-        // Quietly update data points every 15 seconds in the background
-        setInterval(fetchLiveManHours, 15000);
+        // Force sync update loop every 5 seconds to match hardware speed perfectly
+        setInterval(fetchLiveManHours, 5000);
     </script>
 
 </body>
