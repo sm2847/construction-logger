@@ -234,6 +234,17 @@
                 </p>
             </div>
         </div>
+
+        <h2>Planned 4D Construction Sequence (SYNCHRO)</h2>
+        <div class="table-container" style="padding: 20px; background: white; border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <p style="margin: 0 0 15px 0; font-size: 14px; color: #475569; line-height: 1.6;">
+                Use the player controls below to scrub through the baseline time-lapse sequence to monitor expected bridge configuration statuses across the build timeline.
+            </p>
+            <video controls style="width: 100%; max-height: 500px; background: #000; border-radius: 6px; outline: none;">
+                <source src="{{ url_for('static', filename='synchro_4d_sequence.mp4') }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
         
         <h2>Planned Activities Baseline</h2>
         <div class="table-container">
@@ -386,10 +397,10 @@
                                 {% endif %}
                             {% else %}
                                 -
-                            {% endif %}
+                                {% endif %}
                         </td>
                         <td><span style="color: var(--dark-cambridge); font-weight: 600;">{{ log.location or '-' }}</span></td>
-                        <td><strong>{{ log.quantity_done }} {{ log.quantity_unit }}</strong></td>
+                        <td>return records<strong>{{ log.quantity_done }} {{ log.quantity_unit }}</strong></td>
                         <td><small>{{ log.notes or '-' }}</small></td>
                         <td>
                             <a href="/edit/{{ log.id }}" style="background: #FEF3C7; color: var(--warning-amber); padding: 4px 8px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px; margin-right: 5px;">Edit</a>
