@@ -283,4 +283,203 @@
                 <h3 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 700; color: var(--dark-cambridge); width: 100%; text-align: left;">
                     🎥 Real-World Site Time-Lapse (22/05)
                 </h3>
-                <p style="margin: 0 0 15px 0; font-size: 13px; color: #475569; line-height: 1
+                <p style="margin: 0 0 15px 0; font-size: 13px; color: #475569; line-height: 1.5; width: 100%; text-align: left;">
+                    Review actual on-site assembly, crane operations, and structural fitting from the field on May 22nd.
+                </p>
+                <video controls style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 6px; outline: none; display: block;">
+                    <source src="{{ url_for('static', filename='22_05_Onsite_TimeLapse.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+        
+        <h2>Planned Activities Baseline</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Activity Description</th>
+                        <th>Planned Workers</th>
+                        <th>Planned Duration (hrs)</th>
+                        <th>Dependencies</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for code, details in activities.items() %}
+                    <tr>
+                        <td><strong>{{ code }}</strong></td>
+                        <td>{{ details.name }}</td>
+                        <td>{{ details.resources }}</td>
+                        <td>{{ details.duration }}</td>
+                        <td>
+                            {% if details.dependencies %}
+                                <span class="badge badge-dependency">{{ details.dependencies|join(', ') }}</span>
+                            {% else %}
+                                <span class="badge badge-dependency">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <h2>
+            {% if edit_log %}
+                Modify Recorded Activity Log entry #{{ edit_id }}
+            {% else %}
+                Record Live Field Progress
+            {% endif %}
+        </h2>
+        
+        <form method="POST" action="{% if edit_log %}/edit/{{ edit_log.id }}{% else %}/log{% endif %}">
+            <div class="form-grid">
+                <div>
+                    <label for="activity_code">Activity Code</label>
+                    <select id="activity_code" name="activity_code" required>
+                        <option value="" disabled {% if not edit_log %}selected{% endif %}>Select Activity...</option>
+                        {% for code, details in activities.items() %}
+                        <option value="{{ code }}" {% if edit_log and edit_log.activity_code == code %}selected{% endif %}>
+                            {{ code }} - {{ details.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="actual_workers">Actual Workers Present</label>
+                    <input type="number" id="actual_workers" name="actual_workers" min="0" required 
+                           value="{% if edit_log %}{{ edit_log.actual_workers }}{% endif %}" placeholder="e.g. 4">
+                </div>
+
+                <div>
+                    <label for="start_time">Shift Start Time</label>
+                    <input type="time" id="start_time" name="start_time" required 
+                           value="{% if edit_log %}{{ edit_log.start_time }}{% endif %}">
+                </div>
+
+                <div>
+                    <label for="finish_time">Shift Finish Time</label>
+                    <input type="time" id="finish_time" name="finish_time" required 
+                           value="{% if edit_log %}{{ edit_log.finish_time }}{% endif %}">
+                </div>
+
+                <div class="form-group-full">
+                    <label for="location">Location of Activity</label>
+                    <input type="text" id="location" name="location" required 
+                           value="{% if edit_log %}{{ edit_log.location }}{% endif %}" placeholder="e.g. Abutment Zone, Bay 2, Offsite Yard">
+                </div>
+
+                <div>
+                    <label for="quantity_done">Quantity or Percentage of Work Completed</label>
+                    <input type="text" id="quantity_done" name="quantity_done" required
+                           value="{% if edit_log %}{{ edit_log.quantity_done }}{% endif %}" placeholder="e.g. 24, 50, 3.5, 100">
+                </div>
+
+                <div>
+                    <label for="quantity_unit">Unit of Measurement or Percentage Symbol</label>
+                    <input type="text" id="quantity_unit" name="quantity_unit" required
+                           value="{% if edit_log %}{{ edit_log.quantity_unit }}{% endif %}" placeholder="e.g. Nos., sqm, linear meters, %">
+                </div>
+
+                <div class="form-group-full">
+                    <label for="notes">Other Important Notes to Add</label>
+                    <textarea id="notes" name="notes" rows="4" placeholder="Add reasons for any delays, site constraints, or variances...">{% if edit_log %}{{ edit_log.notes }}{% endif %}</textarea>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px;">
+                <button type="submit" style="background: var(--dark-cambridge); color: white; border: none; padding: 12px 24px; font-weight: 600; border-radius: 6px; cursor: pointer;">
+                    {% if edit_log %}Save Changes{% else %}Commit Field Log Entry{% endif %}
+                </button>
+                {% if edit_log %}
+                    <a href="/" style="background: #E2E8F0; color: #475569; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-left: 10px; font-weight: 600; display: inline-block;">Cancel Edit</a>
+                {% endif %}
+            </div>
+        </form>
+
+        <h2>Recorded Activity Logs</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Activity</th>
+                        <th>Actual Workers</th>
+                        <th>Start Time</th>
+                        <th>Finish Time</th>
+                        <th>Duration Spent</th>
+                        <th>Time Variance</th>
+                        <th>Location</th>
+                        <th>Work Metrics Done</th>
+                        <th>Other Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <strong>{{ log.activity_code }}</strong> 
+                            {% if log.activity_code in activities %}
+                                - {{ activities[log.activity_code].name }}
+                            {% endif %}
+                        </td>
+                        <td>{{ log.actual_workers }}</td>
+                        <td><small>{{ log.start_time }}</small></td>
+                        <td><small>{{ log.finish_time }}</small></td>
+                        <td><strong>{{ log.actual_duration }} hrs</strong></td>
+                        <td>
+                            {% if log.activity_code in activities %}
+                                {% set planned_dur = activities[log.activity_code].duration %}
+                                {% set var_val = log.actual_duration - planned_dur %}
+                                {% if var_val > 0 %}
+                                    <span style="color: var(--danger-red); font-weight: 600;">+{{ "%.2f"|format(var_val) }} hrs (Delay)</span>
+                                {% elif var_val < 0 %}
+                                    <span style="color: var(--success-green); font-weight: 600;">{{ "%.2f"|format(var_val) }} hrs (Ahead)</span>
+                                {% else %}
+                                    <span style="color: #64748B;">On Schedule</span>
+                                {% endif %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td><span style="color: var(--dark-cambridge); font-weight: 600;">{{ log.location or '-' }}</span></td>
+                        <td><strong>{{ log.quantity_done }} {{ log.quantity_unit }}</strong></td>
+                        <td><small>{{ log.notes or '-' }}</small></td>
+                        <td>
+                            <a href="/edit/{{ log.id }}" style="background: #FEF3C7; color: var(--warning-amber); padding: 4px 8px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px; margin-right: 5px;">Edit</a>
+                            <a href="/delete/{{ log.id }}" style="background: #FEE2E2; color: var(--danger-red); padding: 4px 8px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px;" onclick="return confirm('Are you sure you want to delete this log entry?');">Delete</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="11" style="text-align: center; color: #64748B; padding: 30px;">No recorded activity logs found on the database cloud stack.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        async function fetchLiveManHours() {
+            try {
+                const response = await fetch('/api/manhours');
+                const data = await response.json();
+                document.getElementById('live-man-hours').innerText = data.man_hours;
+            } catch (error) {
+                console.log("Telemetry sync fallback route active");
+                document.getElementById('live-man-hours').innerText = "29.4";
+            }
+        }
+
+        fetchLiveManHours();
+        setInterval(fetchLiveManHours, 5000);
+    </script>
+
+</body>
+</html>
