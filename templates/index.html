@@ -116,6 +116,55 @@
             justify-content: flex-start;
         }
 
+        /* Modern Team Layout Components */
+        .team-structure-box {
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .team-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            color: #64748B;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .team-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .member-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 500;
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 4px;
+            color: var(--oxford-dark);
+        }
+
+        .member-badge strong {
+            color: var(--dark-cambridge);
+            margin-right: 4px;
+        }
+
+        .member-badge.lead {
+            border-color: var(--cambridge-blue);
+            background: rgba(163, 193, 173, 0.15);
+        }
+
         /* Dynamic Visual Tables Matrix Style Layout */
         .table-container {
             background: white;
@@ -209,6 +258,42 @@
             border-color: var(--dark-cambridge);
             box-shadow: 0 0 0 3px rgba(163, 193, 173, 0.3);
         }
+
+        /* Project Acknowledgments Footer Section */
+        .project-footer {
+            background-color: var(--dark-cambridge);
+            border-top: 4px solid var(--cambridge-blue);
+            color: white;
+            padding: 40px 20px;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .footer-thanks-box {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px 30px;
+            border-radius: 8px;
+            border: 1px solid rgba(163, 193, 173, 0.2);
+        }
+
+        .footer-thanks-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--cambridge-blue);
+            text-transform: uppercase;
+        }
+
+        .footer-thanks-box p {
+            margin: 0;
+            font-size: 15px;
+            color: #E2E8F0;
+            line-height: 1.6;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -244,6 +329,17 @@
                     GD1 Footbridge Project 2026
                 </h1>
                 
+                <div class="team-structure-box">
+                    <div class="team-title">💻 Digital Engineering Team Matrix</div>
+                    <div class="team-row">
+                        <div class="member-badge lead"><strong>Team Lead:</strong> Shanjeev</div>
+                        <div class="member-badge"><strong>Computer Vision:</strong> Shanjeev, Kate, Shaain</div>
+                        <div class="member-badge"><strong>Fibre Optics Strain:</strong> Darong</div>
+                        <div class="member-badge"><strong>BIM:</strong> Milo</div>
+                        <div class="member-badge"><strong>Laser Scanning:</strong> Max T</div>
+                    </div>
+                </div>
+                
                 <p style="margin: 0 0 15px 0; font-size: 14px; color: #475569; line-height: 1.6;">
                     Welcome to the live monitoring platform for the GD1 Offsite Sustainable Construction Project 2026. We have been tasked with the construction of a 13m footbridge across the West Cambridge creek working with Laing O’Rourke as the contractor and Ramboll as the consultant. The main construction phase will run from Wednesday 20th May to Friday 22nd May 2026.
                 </p>
@@ -264,14 +360,14 @@
             </div>
         </div>
 
-        <h2>Project Visualizations and Sequences</h2>
+        <h2>Project Visualisations and Sequences</h2>
         <div class="media-grid">
             <div class="table-container" style="padding: 20px; margin-bottom: 0; display: flex; flex-direction: column; align-items: center;">
                 <h3 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 700; color: var(--dark-cambridge); width: 100%; text-align: left;">
                     📋 Planned 4D Construction Sequence (SYNCHRO)
                 </h3>
                 <p style="margin: 0 0 15px 0; font-size: 13px; color: #475569; line-height: 1.5; width: 100%; text-align: left;">
-                    Watch the baseline time-lapse BIM model sequence of the bridge installation sequence.
+                    Watch the baseline time-lapse BIM model sequence of the bridge installation sequence, created by Milo.
                 </p>
                 <video controls style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 6px; outline: none; display: block;">
                     <source src="{{ url_for('static', filename='synchro_4d_sequence.mp4') }}" type="video/mp4">
@@ -284,7 +380,7 @@
                     🎥 Real-World Site Time-Lapse (22/05)
                 </h3>
                 <p style="margin: 0 0 15px 0; font-size: 13px; color: #475569; line-height: 1.5; width: 100%; text-align: left;">
-                    Review actual on-site assembly, crane operations, and structural fitting from the field on May 22nd.
+                    Review actual on-site assembly, crane operations, and structural fitting from the field on May 22nd captured by Shanjeev, Kate and Shaain.
                 </p>
                 <video controls style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 6px; outline: none; display: block;">
                     <source src="{{ url_for('static', filename='22_05_Onsite_TimeLapse.mp4') }}" type="video/mp4">
@@ -300,13 +396,13 @@
                     🔍 Steel Beam Strain Analysis Setup
                 </h3>
                 <p style="margin: 0 0 12px 0; font-size: 13.5px; color: #475569; line-height: 1.6;">
-                    To evaluate structural performance under load variations, advanced fibre optic strain gauges were deployed along a critical bridge support component. 
+                    To evaluate structural performance under load variations, advanced fibre optic strain gauges were deployed along one of the two main steel beams of the bridge. 
                 </p>
                 <p style="margin: 0; font-size: 13px; color: #475569; line-height: 1.6;">
                     💡 <strong>Sensor Distribution Matrix:</strong><br>
                     • <strong>Top Flange Array:</strong> Monitors real-time structural compression patterns.<br>
                     • <strong>Bottom Flange Array:</strong> Logs structural tension loads during crane staging operations.<br><br>
-                    This telemetry establishes a digital twin baseline configuration to track structural deflection and structural health margins over time.
+                    This telemetry tracks structural deflection and structural health margins over time. Here are some figures plotted by Darong!
                 </p>
             </div>
 
@@ -485,6 +581,13 @@
             </table>
         </div>
 
+    </div>
+
+    <div class="project-footer">
+        <div class="footer-thanks-box">
+            <h3>Special Acknowledgments</h3>
+            <p>A huge thank you to <strong>Brian</strong>, <strong>Nandeesh</strong>, <strong>Zhengyang</strong>, and <strong>Olaf</strong> for their invaluable guidance, support, and oversight throughout the project lifecycle.</p>
+        </div>
     </div>
 
     <script>
