@@ -211,6 +211,66 @@
             background: var(--cambridge-blue-tint);
         }
 
+        /* Project Roster Layout Grid */
+        .project-roster-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .roster-card {
+            background: var(--slate-light);
+            border: 1px solid var(--border-muted);
+            border-radius: var(--radius-standard);
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+        }
+
+        .roster-card h3 {
+            margin: 0 0 12px 0;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--dark-cambridge);
+            border-bottom: 1px solid var(--border-muted);
+            padding-bottom: 6px;
+        }
+
+        .roster-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .roster-list li {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--oxford-dark);
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .roster-list li::before {
+            content: "•";
+            color: var(--cambridge-blue);
+            font-size: 16px;
+        }
+
+        @media (max-width: 992px) {
+            .project-roster-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .project-roster-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* Descriptions Layout Typography */
         .analytics-card-status p {
             font-size: 14.5px;
@@ -385,6 +445,7 @@
             border-radius: var(--radius-standard);
             padding: 24px;
             box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.02);
+            margin-bottom: 20px;
         }
 
         .gallery-container {
@@ -875,6 +936,53 @@
             </div>
         </div>
 
+        <h2>GD1 2026 Presentation Roster</h2>
+        <div class="project-roster-grid">
+            <div class="roster-card">
+                <h3>Group 1 - Management</h3>
+                <ul class="roster-list">
+                    <li>Angus</li>
+                    <li>Joe</li>
+                    <li>Sha</li>
+                    <li>Ben</li>
+                    <li>Max Baker</li>
+                    <li>Alex</li>
+                </ul>
+            </div>
+            <div class="roster-card">
+                <h3>Group 2 - H&amp;S, Quality &amp; Planning</h3>
+                <ul class="roster-list">
+                    <li>Finn</li>
+                    <li>Annabel</li>
+                    <li>Kristina</li>
+                    <li>Dharmeni</li>
+                    <li>Sofia</li>
+                </ul>
+            </div>
+            <div class="roster-card">
+                <h3>Group 3 - Digital</h3>
+                <ul class="roster-list">
+                    <li>Max Taylor</li>
+                    <li>Darong</li>
+                    <li>Kate</li>
+                    <li>Shaain</li>
+                    <li>Shanjeev</li>
+                    <li>Milo</li>
+                </ul>
+            </div>
+            <div class="roster-card">
+                <h3>Group 4 - Technical</h3>
+                <ul class="roster-list">
+                    <li>Faustina</li>
+                    <li>Githika</li>
+                    <li>Emily</li>
+                    <li>Neha</li>
+                    <li>Boaz</li>
+                    <li>Henry B</li>
+                </ul>
+            </div>
+        </div>
+
     </div>
 
     <div class="project-footer">
@@ -889,7 +997,6 @@
             const container = document.getElementById('projectGallery');
             if (!container) return;
             
-            // Computes the active width profile of single inner element items
             const itemWidth = container.querySelector('.gallery-item').offsetWidth + 20; 
             container.scrollBy({
                 left: direction * itemWidth,

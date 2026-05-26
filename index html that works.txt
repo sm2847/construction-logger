@@ -232,7 +232,7 @@
             background: #FFFFFF;
             border-radius: var(--radius-standard);
             box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03);
-            border: 1px solid var(--border-color, var(--border-muted));
+            border: 1px solid var(--border-muted);
             overflow: hidden;
             margin-bottom: 40px;
         }
@@ -376,6 +376,113 @@
             transition: background-color 0.2s;
         }
         .btn-delete:hover { background: rgba(220, 38, 38, 0.15); }
+
+        /* Modern Project Showcase Carousel Gallery CSS */
+        .gallery-wrapper {
+            position: relative;
+            background: var(--slate-light);
+            border: 1px solid var(--border-muted);
+            border-radius: var(--radius-standard);
+            padding: 24px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.02);
+        }
+
+        .gallery-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 10px;
+        }
+
+        /* Custom Modern Scrollbar configuration for Webkit engines */
+        .gallery-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .gallery-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+        }
+        .gallery-container::-webkit-scrollbar-thumb {
+            background: var(--cambridge-blue);
+            border-radius: 10px;
+        }
+
+        .gallery-item {
+            flex: 0 0 calc(33.333% - 14px);
+            scroll-snap-align: start;
+            background: #FFFFFF;
+            border: 1px solid var(--border-muted);
+            border-radius: var(--radius-interactive);
+            padding: 10px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+            transition: transform 0.2s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            border-radius: 6px;
+            display: block;
+        }
+
+        .gallery-item span {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--slate-gray);
+            margin-top: 10px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Smooth Glassmorphic Nav Buttons */
+        .gallery-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid var(--border-muted);
+            color: var(--dark-cambridge);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.2s ease;
+            user-select: none;
+            z-index: 10;
+        }
+
+        .gallery-nav:hover {
+            background: #FFFFFF;
+            color: #000000;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .gallery-nav.prev { left: -15px; }
+        .gallery-nav.next { right: -15px; }
+
+        @media (max-width: 992px) {
+            .gallery-item { flex: 0 0 calc(50% - 10px); }
+        }
+        @media (max-width: 600px) {
+            .gallery-item { flex: 0 0 100%; }
+            .gallery-nav { display: none; } /* Native swipe on small devices */
+        }
 
         /* Project Acknowledgments Footer Section */
         .project-footer {
@@ -699,6 +806,75 @@
             </div>
         </div>
 
+        <h2>Project Pictures</h2>
+        <div class="gallery-wrapper">
+            <div class="gallery-nav prev" onclick="scrollGallery(-1)">&#10094;</div>
+            <div class="gallery-nav next" onclick="scrollGallery(1)">&#10095;</div>
+            
+            <div class="gallery-container" id="projectGallery">
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo1.jpg') }}" alt="Project Documentation 1">
+                    <span>Computer vision equipment</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo2.jpg') }}" alt="Project Documentation 2">
+                    <span>Darong's babies</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo3.jpg') }}" alt="Project Documentation 3">
+                    <span>Push and pull</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo4.jpg') }}" alt="Project Documentation 4">
+                    <span>Teamwork makes dreamwork</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo5.jpg') }}" alt="Project Documentation 5">
+                    <span>Stairs completed it mate</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo6.jpg') }}" alt="Project Documentation 6">
+                    <span>Idle workers</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo7.jpg') }}" alt="Project Documentation 7">
+                    <span>LinkedIn post secured</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo8.jpg') }}" alt="Project Documentation 8">
+                    <span>Minecraft Milo</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo9.jpg') }}" alt="Project Documentation 9">
+                    <span>Paul's squad</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo10.jpg') }}" alt="Project Documentation 10">
+                    <span>Successful bridge</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo11.jpg') }}" alt="Project Documentation 11">
+                    <span>Rory our decking saviour</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo12.jpg') }}" alt="Project Documentation 12">
+                    <span>SHAAINNN IT WORKS</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo13.jpg') }}" alt="Project Documentation 13">
+                    <span>Sally rips off cement!?!?</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo14.jpg') }}" alt="Project Documentation 14">
+                    <span>Kate is cooking</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='photo15.jpg') }}" alt="Project Documentation 15">
+                    <span>Most efficient unloading team</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="project-footer">
@@ -709,6 +885,18 @@
     </div>
 
     <script>
+        function scrollGallery(direction) {
+            const container = document.getElementById('projectGallery');
+            if (!container) return;
+            
+            // Computes the active width profile of single inner element items
+            const itemWidth = container.querySelector('.gallery-item').offsetWidth + 20; 
+            container.scrollBy({
+                left: direction * itemWidth,
+                behavior: 'smooth'
+            });
+        }
+
         async function fetchLiveManHours() {
             try {
                 const response = await fetch('/api/manhours');
