@@ -1,186 +1,240 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>University of Cambridge - Construction Activity Logger</title>
     <style>
         :root {
             --cambridge-blue: #A3C1AD;
-            --dark-cambridge: #003E3E;
-            --oxford-dark: #1E293B;
-            --bg-light: #F8FAFC;
-            --border-color: #E2E8F0;
-            --success-green: #15803D;
-            --danger-red: #B91C1C;
-            --warning-amber: #B45309;
+            --cambridge-blue-tint: rgba(163, 193, 173, 0.15);
+            --cambridge-blue-glow: rgba(163, 193, 173, 0.35);
+            --dark-cambridge: #002D2D;
+            --oxford-dark: #0F172A;
+            --slate-gray: #475569;
+            --slate-light: #F8FAFC;
+            --border-muted: #E2E8F0;
+            --success-green: #16A34A;
+            --success-bg: rgba(22, 163, 74, 0.08);
+            --danger-red: #DC2626;
+            --danger-bg: rgba(220, 38, 38, 0.08);
+            --warning-amber: #D97706;
+            --warning-bg: rgba(217, 119, 6, 0.08);
+            --radius-standard: 12px;
+            --radius-interactive: 8px;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            font-family: var(--font-stack); 
             margin: 0; 
             padding: 0; 
-            background-color: var(--bg-light); 
+            background-color: #FFFFFF; 
             color: var(--oxford-dark);
-            line-height: 1.5;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Institutional Header Banner Layout */
+        /* Premium Institutional Header */
         .header-banner {
             background-color: var(--dark-cambridge);
-            color: white;
-            padding: 30px 40px;
-            border-bottom: 5px solid var(--cambridge-blue);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            color: #FFFFFF;
+            padding: 40px 60px;
+            border-bottom: 4px solid var(--cambridge-blue);
+            box-shadow: 0 10px 30px -10px rgba(0, 45, 45, 0.15);
+            position: relative;
         }
 
         .header-banner h1 {
             margin: 0;
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.75px;
+            line-height: 1.2;
         }
 
         .header-banner p {
-            margin: 5px 0 0 0;
+            margin: 8px 0 0 0;
             color: var(--cambridge-blue);
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
+            letter-spacing: 1.5px;
+            font-weight: 700;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
+            max-width: 1240px;
+            margin: 50px auto;
+            padding: 0 30px;
+            box-sizing: border-box;
         }
 
         h2 { 
             color: var(--dark-cambridge); 
-            font-size: 20px;
-            border-bottom: 2px solid var(--cambridge-blue);
-            padding-bottom: 8px;
-            margin-top: 40px;
-            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            border-bottom: 2px solid var(--border-muted);
+            padding-bottom: 12px;
+            margin-top: 60px;
+            margin-bottom: 24px;
+            position: relative;
         }
 
-        /* Analytics Overview Components Grid */
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background-color: var(--dark-cambridge);
+        }
+
+        /* Dashboard Analytical Grids */
         .analytics-grid {
             display: grid;
-            grid-template-columns: 1.2fr 2fr;
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: 1.25fr 2fr;
+            gap: 30px;
+            margin-bottom: 50px;
         }
 
-        /* Sub-grid system to hold charts vertically next to description block */
         .charts-subgrid {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 30px;
         }
 
-        /* Responsive Grid for Media Displays */
-        .media-grid {
+        .media-grid, .data-visualization-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 30px;
+            margin-bottom: 40px;
         }
 
-        /* Expanded layout configuration specifically for complex graphical data */
         .data-visualization-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.8fr;
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: 1fr 1.6fr;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .analytics-grid, .media-grid, .data-visualization-grid {
                 grid-template-columns: 1fr;
             }
+            .header-banner {
+                padding: 30px;
+            }
         }
 
+        /* Elegant Card Interfaces */
         .analytics-card-chart {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: var(--slate-light);
+            padding: 24px;
+            border-radius: var(--radius-standard);
+            border: 1px solid var(--border-muted);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.02);
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .analytics-card-status {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: #FFFFFF;
+            padding: 35px;
+            border-radius: var(--radius-standard);
+            border: 1px solid var(--border-muted);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03);
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
         }
 
-        /* Modern Team Layout Components */
+        .analytics-card-status h1 {
+            font-size: 28px;
+            color: var(--dark-cambridge);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+            margin: 0 0 20px 0;
+        }
+
+        /* Elite Digital Engineering Team Matrix UI */
         .team-structure-box {
-            background: #F8FAFC;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 20px;
+            background: var(--slate-light);
+            border: 1px solid var(--border-muted);
+            border-radius: var(--radius-interactive);
+            padding: 20px;
+            margin-bottom: 25px;
         }
 
         .team-title {
             font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 0.75px;
-            color: #64748B;
-            font-weight: 700;
-            margin-bottom: 10px;
+            letter-spacing: 1px;
+            color: var(--slate-gray);
+            font-weight: 800;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         .team-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
         }
 
         .member-badge {
             display: inline-flex;
             align-items: center;
             font-size: 12px;
-            font-weight: 500;
-            background: white;
-            border: 1px solid var(--border-color);
-            padding: 4px 10px;
-            border-radius: 4px;
+            font-weight: 600;
+            background: #FFFFFF;
+            border: 1px solid var(--border-muted);
+            padding: 6px 12px;
+            border-radius: var(--radius-interactive);
             color: var(--oxford-dark);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
         }
 
         .member-badge strong {
             color: var(--dark-cambridge);
-            margin-right: 4px;
+            margin-right: 5px;
         }
 
         .member-badge.lead {
             border-color: var(--cambridge-blue);
-            background: rgba(163, 193, 173, 0.15);
+            background: var(--cambridge-blue-tint);
         }
 
-        /* Dynamic Visual Tables Matrix Style Layout */
+        /* Descriptions Layout Typography */
+        .analytics-card-status p {
+            font-size: 14.5px;
+            color: var(--slate-gray);
+            line-height: 1.7;
+            margin: 0 0 20px 0;
+        }
+
+        .analytics-card-status p:last-of-type {
+            margin-bottom: 0;
+            background: var(--slate-light);
+            padding: 20px;
+            border-radius: var(--radius-standard);
+            border-left: 4px solid var(--cambridge-blue);
+        }
+
+        /* Modern Table Canvas Layout */
         .table-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid var(--border-color);
+            background: #FFFFFF;
+            border-radius: var(--radius-standard);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color, var(--border-muted));
             overflow: hidden;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         table { 
@@ -191,18 +245,22 @@
         }
 
         th, td { 
-            padding: 14px 16px; 
+            padding: 16px 20px; 
         }
 
         th { 
-            background: #F1F5F9; 
+            background: var(--slate-light); 
             color: var(--dark-cambridge);
-            font-weight: 600;
-            border-bottom: 2px solid var(--border-color);
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border-muted);
         }
 
         tr {
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-muted);
+            transition: background-color 0.15s ease;
         }
 
         tr:last-child {
@@ -210,31 +268,31 @@
         }
 
         tbody tr:hover {
-            background-color: #F8FAFC;
+            background-color: rgba(248, 250, 252, 0.75);
         }
 
         .badge-dependency {
             background: #EDF2F7;
             color: #4A5568;
-            padding: 2px 6px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
+            font-size: 11.5px;
+            font-weight: 600;
         }
 
-        /* Progress Reporting Logger Input Layout Form */
+        /* High-End Form Components Control System */
         form { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 8px; 
-            border: 1px solid var(--border-color);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: #FFFFFF; 
+            padding: 40px; 
+            border-radius: var(--radius-standard); 
+            border: 1px solid var(--border-muted);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03);
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+            gap: 24px;
         }
 
         .form-group-full {
@@ -243,64 +301,116 @@
 
         label {
             display: block;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 12.5px;
+            font-weight: 700;
             color: var(--oxford-dark);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         input, textarea, select { 
             width: 100%; 
-            padding: 10px 12px; 
+            padding: 12px 16px; 
             border: 1px solid #CBD5E1;
-            border-radius: 6px;
-            background-color: #FFF;
+            border-radius: var(--radius-interactive);
+            background-color: #FFFFFF;
             font-size: 14px;
             color: var(--oxford-dark);
             box-sizing: border-box; 
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: var(--dark-cambridge);
-            box-shadow: 0 0 0 3px rgba(163, 193, 173, 0.3);
+            box-shadow: 0 0 0 4px var(--cambridge-blue-glow);
         }
+
+        button {
+            background: var(--dark-cambridge);
+            color: #FFFFFF;
+            border: none;
+            padding: 14px 28px;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.25px;
+            border-radius: var(--radius-interactive);
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 12px rgba(0, 45, 45, 0.15);
+        }
+
+        button:hover {
+            background-color: #004242;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Operational Dynamic Action Elements */
+        .btn-edit {
+            background: var(--warning-bg);
+            color: var(--warning-amber);
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12px;
+            margin-right: 6px;
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+        .btn-edit:hover { background: rgba(217, 119, 6, 0.15); }
+
+        .btn-delete {
+            background: var(--danger-bg);
+            color: var(--danger-red);
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12px;
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+        .btn-delete:hover { background: rgba(220, 38, 38, 0.15); }
 
         /* Project Acknowledgments Footer Section */
         .project-footer {
             background-color: var(--dark-cambridge);
             border-top: 4px solid var(--cambridge-blue);
-            color: white;
-            padding: 40px 20px;
-            margin-top: 60px;
+            color: #FFFFFF;
+            padding: 60px 20px;
+            margin-top: 80px;
             text-align: center;
         }
 
         .footer-thanks-box {
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px 30px;
-            border-radius: 8px;
-            border: 1px solid rgba(163, 193, 173, 0.2);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 30px 40px;
+            border-radius: var(--radius-standard);
+            border: 1px solid rgba(163, 193, 173, 0.15);
         }
 
         .footer-thanks-box h3 {
-            margin: 0 0 10px 0;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 1px;
+            margin: 0 0 14px 0;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
             color: var(--cambridge-blue);
             text-transform: uppercase;
         }
 
         .footer-thanks-box p {
             margin: 0;
-            font-size: 15px;
+            font-size: 14.5px;
             color: #E2E8F0;
-            line-height: 1.6;
-            font-weight: 500;
+            line-height: 1.7;
+            font-weight: 400;
         }
     </style>
 </head>
@@ -308,7 +418,7 @@
 
     <div class="header-banner">
         <h1>University of Cambridge Department of Civil Engineering</h1>
-        <p>GD1 CONSTRUCTION PROJECT - DIGITAL TEAM SUMMARY - ACTIVITY AND RESOURCE LOGGER</p>
+        <p>GD1 Construction Project • Digital Team Summary Dashboard</p>
     </div>
 
     <div class="container">
@@ -316,26 +426,24 @@
         <div class="analytics-grid">
             <div class="charts-subgrid">
                 
-                <div class="analytics-card-chart" style="height: 250px;">
+                <div class="analytics-card-chart" style="height: 260px;">
                     <iframe width="100%" height="100%" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTldeCOJ-syPDiaKJMmwr8u2YBmPTCWvXlNS4TnStWTqOx12BpS7Hgf9kBTPTwJD-qtLLYq3SZYHbbc/pubchart?oid=1078969309&amp;format=interactive"></iframe>
                 </div>
 
-                <div class="analytics-card-chart" style="height: 180px; padding: 20px; align-items: stretch; background: white; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                    <h3 style="margin: 0 0 15px 0; font-size: 13px; font-weight: 700; color: var(--dark-cambridge); text-align: left; letter-spacing: -0.2px;">
+                <div class="analytics-card-chart" style="height: 190px; padding: 24px; align-items: stretch; background: #FFFFFF;">
+                    <h3 style="margin: 0 0 15px 0; font-size: 12px; font-weight: 800; color: var(--dark-cambridge); text-align: left; letter-spacing: 0.5px; text-transform: uppercase;">
                         ⏱️ Live CV Telemetry (Cumulative Man Hours)
                     </h3>
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1;">
-                        <span id="live-man-hours" style="font-size: 54px; font-weight: 800; color: #15803D; line-height: 1;">--</span>
-                        <span style="font-size: 12px; color: #64748B; margin-top: 5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Hours Logged Live</span>
+                        <span id="live-man-hours" style="font-size: 56px; font-weight: 900; color: var(--success-green); line-height: 1; letter-spacing: -1px;">--</span>
+                        <span style="font-size: 11px; color: var(--slate-gray); margin-top: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Hours Logged Live</span>
                     </div>
                 </div>
 
             </div>
 
             <div class="analytics-card-status">
-                <h1 style="margin: 0 0 15px 0; font-size: 26px; color: var(--dark-cambridge); font-weight: 800; letter-spacing: -0.5px; line-height: 1.3;">
-                    GD1 Project 2026
-                </h1>
+                <h1>GD1 Project 2026</h1>
                 
                 <div class="team-structure-box">
                     <div class="team-title">💻 Digital Engineering Team Matrix</div>
@@ -348,14 +456,14 @@
                     </div>
                 </div>
                 
-                <p style="margin: 0 0 15px 0; font-size: 14px; color: #475569; line-height: 1.6;">
+                <p>
                     Welcome to the live monitoring platform for the GD1 Offsite Sustainable Construction Project 2026. We have been tasked with the construction of a 13m footbridge across the West Cambridge creek working with Laing O’Rourke as the contractor and Ramboll as the consultant. The main construction phase will run from Wednesday 20th May to Friday 22nd May 2026.
                 </p>
-                <p style="margin: 0 0 20px 0; font-size: 14px; color: #475569; line-height: 1.6;">
+                <p>
                     This platform has been set up to help monitor site activity, track progress in real time, and compare planned works against what is actually happening on site throughout the project.
                 </p>
                 
-                <p style="margin: 0; font-size: 13px; color: #475569; line-height: 1.6;">
+                <p>
                     📊 <strong>Live Progress Tracking</strong><br>
                     The progress display on the left shows live updates based on real-time site activity and completed construction tasks as work progresses.<br><br>
                     📅 <strong>Planned Programme</strong><br>
@@ -370,27 +478,27 @@
 
         <h2>Project Visualisations and Sequences</h2>
         <div class="media-grid">
-            <div class="table-container" style="padding: 20px; margin-bottom: 0; display: flex; flex-direction: column; align-items: center;">
-                <h3 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 700; color: var(--dark-cambridge); width: 100%; text-align: left;">
+            <div class="table-container" style="padding: 24px; margin-bottom: 0; display: flex; flex-direction: column; align-items: center; background: #FFFFFF;">
+                <h3 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 800; color: var(--dark-cambridge); width: 100%; text-align: left; letter-spacing: -0.25px;">
                     📋 Planned 4D Construction Sequence (SYNCHRO)
                 </h3>
-                <p style="margin: 0 0 15px 0; font-size: 13px; color: #475569; line-height: 1.5; width: 100%; text-align: left;">
+                <p style="margin: 0 0 20px 0; font-size: 13px; color: var(--slate-gray); line-height: 1.5; width: 100%; text-align: left;">
                     Watch the baseline time-lapse BIM model sequence of the bridge installation sequence, created by Milo.
                 </p>
-                <video controls style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 6px; outline: none; display: block;">
+                <video controls style="width: 100%; aspect-ratio: 16/9; background: #0F172A; border-radius: var(--radius-interactive); outline: none; display: block; box-shadow: inset 0 0 20px rgba(0,0,0,0.2);">
                     <source src="{{ url_for('static', filename='synchro_4d_sequence.mp4') }}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
 
-            <div class="table-container" style="padding: 20px; margin-bottom: 0; display: flex; flex-direction: column; align-items: center;">
-                <h3 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 700; color: var(--dark-cambridge); width: 100%; text-align: left;">
+            <div class="table-container" style="padding: 24px; margin-bottom: 0; display: flex; flex-direction: column; align-items: center; background: #FFFFFF;">
+                <h3 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 800; color: var(--dark-cambridge); width: 100%; text-align: left; letter-spacing: -0.25px;">
                     🎥 Real-World Site Time-Lapse (22/05)
                 </h3>
-                <p style="margin: 0 0 15px 0; font-size: 13px; color: #475569; line-height: 1.5; width: 100%; text-align: left;">
+                <p style="margin: 0 0 20px 0; font-size: 13px; color: var(--slate-gray); line-height: 1.5; width: 100%; text-align: left;">
                     Review actual on-site assembly, crane operations, and structural fitting from the field on May 22nd, captured by digital's fav trio Shanjeev, Kate and Shaain.
                 </p>
-                <video controls style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 6px; outline: none; display: block;">
+                <video controls style="width: 100%; aspect-ratio: 16/9; background: #0F172A; border-radius: var(--radius-interactive); outline: none; display: block; box-shadow: inset 0 0 20px rgba(0,0,0,0.2);">
                     <source src="{{ url_for('static', filename='22_05_Onsite_TimeLapse.mp4') }}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
@@ -399,23 +507,23 @@
         
         <h2>Fibre Optics Structural Health Monitoring</h2>
         <div class="data-visualization-grid">
-            <div class="analytics-card-status" style="justify-content: center; padding: 25px;">
-                <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700; color: var(--dark-cambridge);">
-                    🔍 Steel Beam Strain Analysis 
+            <div class="analytics-card-status" style="justify-content: center; padding: 30px;">
+                <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 800; color: var(--dark-cambridge); letter-spacing: -0.25px;">
+                    🔍 Steel Beam Strain Analysis
                 </h3>
-                <p style="margin: 0 0 12px 0; font-size: 13.5px; color: #475569; line-height: 1.6;">
+                <p style="margin: 0 0 16px 0; font-size: 13.5px; color: var(--slate-gray); line-height: 1.6;">
                     To evaluate structural performance under load variations, advanced fibre optic strain gauges were deployed along one of the two main steel beams of the bridge. 
                 </p>
-                <p style="margin: 0; font-size: 13px; color: #475569; line-height: 1.6;">
+                <p style="margin: 0; font-size: 13px; color: var(--slate-gray); line-height: 1.6; background: var(--slate-light); padding: 18px; border-radius: var(--radius-interactive); border-left: 3px solid var(--cambridge-blue);">
                     💡 <strong>Sensor Distribution Matrix:</strong><br>
-                    • <strong>Top Flange Array:</strong> Monitors real-time structural compression patterns.<br>
-                    • <strong>Bottom Flange Array:</strong> Logs structural tension loads during crane staging operations.<br><br>
-                    This telemetry tracks structural deflection and structural health margins over time. Here are some figures plotted by Darong!
+                    • <strong>Top Flange Array:</strong> Real-time compression tracking.<br>
+                    • <strong>Bottom Flange Array:</strong> Tension load mapping during lifting operations.<br><br>
+                    This instrumentation establishes live health indexing safety margins. Plotted and optimized by Darong.
                 </p>
             </div>
 
-            <div class="table-container" style="padding: 24px; margin-bottom: 0; display: flex; align-items: center; justify-content: center; background: white;">
-                <img src="{{ url_for('static', filename='strain analysis.png') }}" alt="Fibre Optics Strain Analysis of Steel Beams" style="width: 100%; height: auto; border-radius: 6px; object-fit: contain; box-shadow: 0 1px 4px rgba(0,0,0,0.02);">
+            <div class="table-container" style="padding: 24px; margin-bottom: 0; display: flex; align-items: center; justify-content: center; background: #FFFFFF;">
+                <img src="{{ url_for('static', filename='strain analysis.png') }}" alt="Fibre Optics Strain Analysis of Steel Beams" style="width: 100%; height: auto; border-radius: var(--radius-interactive); object-fit: contain;">
             </div>
         </div>
         
@@ -434,15 +542,15 @@
                 <tbody>
                     {% for code, details in activities.items() %}
                     <tr>
-                        <td><strong>{{ code }}</strong></td>
-                        <td>{{ details.name }}</td>
+                        <td><strong style="color: var(--dark-cambridge);">{{ code }}</strong></td>
+                        <td style="font-weight: 500;">{{ details.name }}</td>
                         <td>{{ details.resources }}</td>
-                        <td>{{ details.duration }}</td>
+                        <td style="font-weight: 600;">{{ details.duration }}</td>
                         <td>
                             {% if details.dependencies %}
-                                <span class="badge badge-dependency">{{ details.dependencies|join(', ') }}</span>
+                                <span class="badge-dependency">{{ details.dependencies|join(', ') }}</span>
                             {% else %}
-                                <span class="badge badge-dependency">-</span>
+                                <span class="badge-dependency" style="color:#94A3B8; background:none; font-weight:400;">-</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -498,15 +606,15 @@
                 </div>
 
                 <div>
-                    <label for="quantity_done">Quantity or Percentage of Work Completed</label>
+                    <label for="quantity_done">Quantity Completed</label>
                     <input type="text" id="quantity_done" name="quantity_done" required
-                           value="{% if edit_log %}{{ edit_log.quantity_done }}{% endif %}" placeholder="e.g. 24, 50, 3.5, 100">
+                           value="{% if edit_log %}{{ edit_log.quantity_done }}{% endif %}" placeholder="e.g. 24, 50, 100">
                 </div>
 
                 <div>
-                    <label for="quantity_unit">Unit of Measurement or Percentage Symbol</label>
+                    <label for="quantity_unit">Unit of Measurement</label>
                     <input type="text" id="quantity_unit" name="quantity_unit" required
-                           value="{% if edit_log %}{{ edit_log.quantity_unit }}{% endif %}" placeholder="e.g. Nos., sqm, linear meters, %">
+                           value="{% if edit_log %}{{ edit_log.quantity_unit }}{% endif %}" placeholder="e.g. Nos., sqm, %">
                 </div>
 
                 <div class="form-group-full">
@@ -515,78 +623,80 @@
                 </div>
             </div>
 
-            <div style="margin-top: 25px;">
-                <button type="submit" style="background: var(--dark-cambridge); color: white; border: none; padding: 12px 24px; font-weight: 600; border-radius: 6px; cursor: pointer;">
+            <div style="margin-top: 30px;">
+                <button type="submit">
                     {% if edit_log %}Save Changes{% else %}Commit Field Log Entry{% endif %}
                 </button>
                 {% if edit_log %}
-                    <a href="/" style="background: #E2E8F0; color: #475569; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-left: 10px; font-weight: 600; display: inline-block;">Cancel Edit</a>
+                    <a href="/" style="background: var(--slate-light); color: var(--slate-gray); padding: 14px 24px; text-decoration: none; border-radius: var(--radius-interactive); margin-left: 12px; font-weight: 700; font-size: 14px; display: inline-block; border: 1px solid var(--border-muted);">Cancel Edit</a>
                 {% endif %}
             </div>
         </form>
 
         <h2>Recorded Activity Logs</h2>
         <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Activity</th>
-                        <th>Actual Workers</th>
-                        <th>Start Time</th>
-                        <th>Finish Time</th>
-                        <th>Duration Spent</th>
-                        <th>Time Variance</th>
-                        <th>Location</th>
-                        <th>Work Metrics Done</th>
-                        <th>Other Notes</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in logs %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>
-                            <strong>{{ log.activity_code }}</strong> 
-                            {% if log.activity_code in activities %}
-                                - {{ activities[log.activity_code].name }}
-                            {% endif %}
-                        </td>
-                        <td>{{ log.actual_workers }}</td>
-                        <td><small>{{ log.start_time }}</small></td>
-                        <td><small>{{ log.finish_time }}</small></td>
-                        <td><strong>{{ log.actual_duration }} hrs</strong></td>
-                        <td>
-                            {% if log.activity_code in activities %}
-                                {% set planned_dur = activities[log.activity_code].duration %}
-                                {% set var_val = log.actual_duration - planned_dur %}
-                                {% if var_val > 0 %}
-                                    <span style="color: var(--danger-red); font-weight: 600;">+{{ "%.2f"|format(var_val) }} hrs (Delay)</span>
-                                {% elif var_val < 0 %}
-                                    <span style="color: var(--success-green); font-weight: 600;">{{ "%.2f"|format(var_val) }} hrs (Ahead)</span>
-                                {% else %}
-                                    <span style="color: #64748B;">On Schedule</span>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Activity</th>
+                            <th>Actual Workers</th>
+                            <th>Start Time</th>
+                            <th>Finish Time</th>
+                            <th>Duration Spent</th>
+                            <th>Time Variance</th>
+                            <th>Location</th>
+                            <th>Work Metrics Done</th>
+                            <th>Other Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>
+                                <strong style="color: var(--dark-cambridge);">{{ log.activity_code }}</strong> 
+                                {% if log.activity_code in activities %}
+                                    <span style="color: var(--slate-gray); font-weight: 400;">- {{ activities[log.activity_code].name }}</span>
                                 {% endif %}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td><span style="color: var(--dark-cambridge); font-weight: 600;">{{ log.location or '-' }}</span></td>
-                        <td><strong>{{ log.quantity_done }} {{ log.quantity_unit }}</strong></td>
-                        <td><small>{{ log.notes or '-' }}</small></td>
-                        <td>
-                            <a href="/edit/{{ log.id }}" style="background: #FEF3C7; color: var(--warning-amber); padding: 4px 8px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px; margin-right: 5px;">Edit</a>
-                            <a href="/delete/{{ log.id }}" style="background: #FEE2E2; color: var(--danger-red); padding: 4px 8px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px;" onclick="return confirm('Are you sure you want to delete this log entry?');">Delete</a>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="11" style="text-align: center; color: #64748B; padding: 30px;">No recorded activity logs found on the database cloud stack.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            </td>
+                            <td style="font-weight: 500;">{{ log.actual_workers }}</td>
+                            <td><small style="color: var(--slate-gray);">{{ log.start_time }}</small></td>
+                            <td><small style="color: var(--slate-gray);">{{ log.finish_time }}</small></td>
+                            <td><strong style="color: var(--oxford-dark);">{{ log.actual_duration }} hrs</strong></td>
+                            <td>
+                                {% if log.activity_code in activities %}
+                                    {% set planned_dur = activities[log.activity_code].duration %}
+                                    {% set var_val = log.actual_duration - planned_dur %}
+                                    {% if var_val > 0 %}
+                                        <span style="color: var(--danger-red); background: var(--danger-bg); padding: 4px 8px; border-radius: 4px; font-weight: 700; font-size: 12px;">+{{ "%.2f"|format(var_val) }} hrs (Delay)</span>
+                                    {% elif var_val < 0 %}
+                                        <span style="color: var(--success-green); background: var(--success-bg); padding: 4px 8px; border-radius: 4px; font-weight: 700; font-size: 12px;">{{ "%.2f"|format(var_val) }} hrs (Ahead)</span>
+                                    {% else %}
+                                        <span style="color: var(--slate-gray); font-weight: 500; font-size: 13px;">On Schedule</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span style="color: var(--slate-gray); font-weight: 400;">-</span>
+                                {% endif %}
+                            </td>
+                            <td><span style="color: var(--dark-cambridge); font-weight: 600;">{{ log.location or '-' }}</span></td>
+                            <td><strong style="color: var(--dark-cambridge);">{{ log.quantity_done }} {{ log.quantity_unit }}</strong></td>
+                            <td><small style="color: var(--slate-gray); font-size: 12.5px;">{{ log.notes or '-' }}</small></td>
+                            <td style="white-space: nowrap;">
+                                <a href="/edit/{{ log.id }}" class="btn-edit">Edit</a>
+                                <a href="/delete/{{ log.id }}" class="btn-delete" onclick="return confirm('Are you sure you want to delete this log entry?');">Delete</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="11" style="text-align: center; color: var(--slate-gray); padding: 40px; font-style: italic;">No recorded activity logs found on the database cloud stack.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </div>
@@ -594,7 +704,7 @@
     <div class="project-footer">
         <div class="footer-thanks-box">
             <h3>Special Acknowledgments</h3>
-            <p>A huge thank you to <strong>Brian</strong>, <strong>Nandeesh</strong>, <strong>Zhengyang</strong>, and <strong>Olaf</strong> for their invaluable guidance and support throughout the whole project. We would also want to express our gratitude to Laing O’Rourke, Ramboll, Severfield and Trimble as the key industry partners for the project this year :) </p>
+            <p>A huge thank you to <strong>Brian</strong>, <strong>Nandeesh</strong>, <strong>Zhengyang</strong>, and <strong>Olaf</strong> for their invaluable guidance and support throughout the whole project. We would also want to express our gratitude to Laing O’Rourke, Ramboll, Severfield, and Trimble as the key industry partners for the project this year :) </p>
         </div>
     </div>
 
